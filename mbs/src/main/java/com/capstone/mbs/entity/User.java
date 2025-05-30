@@ -28,7 +28,7 @@ public class User {
 	
 	@Column(nullable = false, unique = true)
 	@NotBlank(message = "Username cannot be blank")
-	@Size(max = 36, message = "Username max length limit is 36 characters")
+	@Size(min = 3, max = 36, message = "Username length must be within 3-36 characters")
 	private String username;
 	
 	@Column(nullable = false)
