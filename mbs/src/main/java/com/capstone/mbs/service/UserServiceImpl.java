@@ -1,5 +1,11 @@
 package com.capstone.mbs.service;
 
+import com.capstone.mbs.dto.UserCreateDTO;
+import com.capstone.mbs.dto.UserDTOMapper;
+import com.capstone.mbs.dto.UserResponseDTO;
+import com.capstone.mbs.dto.UserUpdatePasswordDTO;
+import com.capstone.mbs.dto.UserUpdateRoleDTO;
+import com.capstone.mbs.dto.UserUpdateUsernameDTO;
 import com.capstone.mbs.entity.User;
 import com.capstone.mbs.exception.DuplicateUsernameException;
 import com.capstone.mbs.exception.InvalidPasswordException;
@@ -9,8 +15,9 @@ import com.capstone.mbs.repository.UserRepository;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 import lombok.RequiredArgsConstructor;
-import lombok.NonNull;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,101 +30,114 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class UserServiceImpl implements UserService {
-	private final UserRepository userRepository;
-	private final PasswordEncoder passwordEncoder;
-	private static String noUserWithId = "User not found with id: ";
-	private static String nameExists = "Username already exists: ";
-	
-	@Override
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private static final String NO_USER_WITH_ID = "User not found with id: ";
+    private static final String NAME_EXISTS = "Username already exists: ";
+    
+    @Override
     @Transactional
-    public ResponseEntity<User> createUser(@NonNull String username, @NonNull String password, @NonNull User.Role role) {
-        validateUsername(username);
-        validatePassword(password);
+    public ResponseEntity<UserResponseDTO> createUser(@Valid UserCreateDTO userCreateDTO) {
+        validateUsername(userCreateDTO.username());
+        validatePassword(userCreateDTO.password());
         
-        if(usernameExists(username)) {
-            throw new DuplicateUsernameException(nameExists + username);
+        if(usernameExists(userCreateDTO.username())) {
+            throw new DuplicateUsernameException(NAME_EXISTS + userCreateDTO.username());
         }
 
         var user = new User();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setRole(role);
+        user.setUsername(userCreateDTO.username());
+        user.setPassword(passwordEncoder.encode(userCreateDTO.password()));
+        user.setRole(userCreateDTO.role());
 
         User savedUser = userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+        return ResponseEntity.status(HttpStatus.CREATED)
+               .body(UserDTOMapper.toUserResponseDTO(savedUser));
     }
     
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(
+            users.stream()
+                .map(UserDTOMapper::toUserResponseDTO)
+                .toList()
+        );
     }
     
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<User> getUserById(long userId) {
+    public ResponseEntity<UserResponseDTO> getUserById(long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(noUserWithId + userId));
-        return ResponseEntity.ok(user);
+                .orElseThrow(() -> new UserNotFoundException(NO_USER_WITH_ID + userId));
+        return ResponseEntity.ok(UserDTOMapper.toUserResponseDTO(user));
     }
     
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<List<User>> getUserByUsername(String username) {
+    public ResponseEntity<List<UserResponseDTO>> getUserByUsername(String username) {
         List<User> users = userRepository.findByUsernameContainingIgnoreCase(username);
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(
+            users.stream()
+                .map(UserDTOMapper::toUserResponseDTO)
+                .toList()
+        );
     }
     
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<List<User>> getUsersByRole(User.Role role) {
+    public ResponseEntity<List<UserResponseDTO>> getUsersByRole(User.Role role) {
         List<User> users = userRepository.findByRole(role);
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(
+            users.stream()
+                .map(UserDTOMapper::toUserResponseDTO)
+                .toList()
+        );
     }
 
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> updateUsername(long userId, String newUsername) {
-        validateUsername(newUsername);
+    public ResponseEntity<UserResponseDTO> updateUsername(long userId, UserUpdateUsernameDTO updateDTO) {
+        validateUsername(updateDTO.newUsername());
         
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(noUserWithId + userId));
+                .orElseThrow(() -> new UserNotFoundException(NO_USER_WITH_ID + userId));
         
-        if(usernameExists(newUsername)) {
-            throw new DuplicateUsernameException(nameExists + newUsername);
+        if(usernameExists(updateDTO.newUsername())) {
+            throw new DuplicateUsernameException(NAME_EXISTS + updateDTO.newUsername());
         }
 
-        user.setUsername(newUsername);
+        user.setUsername(updateDTO.newUsername());
         User updatedUser = userRepository.save(user);
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(UserDTOMapper.toUserResponseDTO(updatedUser));
     }
     
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> updatePassword(long userId, String newPassword) {
-        validatePassword(newPassword);
+    public ResponseEntity<UserResponseDTO> updatePassword(long userId, UserUpdatePasswordDTO updateDTO) {
+        validatePassword(updateDTO.newPassword());
         
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(noUserWithId + userId));
+                .orElseThrow(() -> new UserNotFoundException(NO_USER_WITH_ID + userId));
 
-        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPassword(passwordEncoder.encode(updateDTO.newPassword()));
         User updatedUser = userRepository.save(user);
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(UserDTOMapper.toUserResponseDTO(updatedUser));
     }
     
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<User> updateRole(long userId, User.Role newRole) {
+    public ResponseEntity<UserResponseDTO> updateRole(long userId, UserUpdateRoleDTO updateDTO) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(noUserWithId + userId));
+                .orElseThrow(() -> new UserNotFoundException(NO_USER_WITH_ID + userId));
 
-        user.setRole(newRole);
+        user.setRole(updateDTO.newRole());
         User updatedUser = userRepository.save(user);
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(UserDTOMapper.toUserResponseDTO(updatedUser));
     }
 
     @Override
@@ -131,11 +151,10 @@ public class UserServiceImpl implements UserService {
         return ResponseEntity.noContent().build();
     }
     
-    
     private boolean usernameExists(String username) {
         return userRepository.findByUsername(username).isPresent();
     }
-	
+    
     private void validateUsername(String username) {
         if(username == null || username.isBlank()) {
             throw new InvalidUsernameException("Username cannot be blank");
@@ -144,7 +163,7 @@ public class UserServiceImpl implements UserService {
             throw new InvalidUsernameException("Username length must be 36 characters or less");
         }
     }
-	
+    
     private void validatePassword(String password) {
         if(password == null || password.isBlank()) {
             throw new InvalidPasswordException("Password cannot be blank");
