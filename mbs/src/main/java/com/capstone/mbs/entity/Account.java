@@ -26,12 +26,13 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "accounts")
+@Table(name = "account")
 
 public class Account {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "account_id", nullable = false)
 	private Long accountId;
 	
 	@OneToOne(optional = false)
@@ -54,7 +55,7 @@ public class Account {
 	
 	@Column(nullable = false)
 	@DecimalMin(value = "0.0", inclusive = false)
-	private BigDecimal balance;
+	private BigDecimal balance = BigDecimal.ZERO; // Default balance is zero
 	
 	//Constructors
 	public Account () 
