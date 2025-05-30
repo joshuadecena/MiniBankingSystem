@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.DecimalMin;
 
@@ -18,8 +19,10 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import java.math.BigDecimal;
+
 
 @Entity
 @Getter
@@ -40,21 +43,23 @@ public class Account {
 	private User user;
 	
 	@Column(nullable = false, length = 100)
-	@NotBlank
+	@NotBlank(message = "Name cannot be blank")
 	private String name;
 	
 	@Column(length = 100, nullable = false, unique = true)
-	@Email
+	@Email(message = "Email should be valid")
+	@NotBlank(message = "Email cannot be blank")
 	private String email;
 	
 	@Column(length = 255)
 	private String address;
 	
+	@NotNull(message = "Date of Birth is required")
 	@Column(name = "date_of_birth", nullable = false)
 	private LocalDate dateOfBirth;
 	
 	@Column(nullable = false)
-	@DecimalMin(value = "0.0", inclusive = false)
+	@DecimalMin(value = "0.0", inclusive = true, message = "Balance must be greater than or equal to zero")
 	private BigDecimal balance = BigDecimal.ZERO; // Default balance is zero
 	
 	//Constructors
