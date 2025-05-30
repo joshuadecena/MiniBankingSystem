@@ -62,12 +62,6 @@ public class Account {
 	@DecimalMin(value = "0.0", inclusive = true, message = "Balance must be greater than or equal to zero")
 	private BigDecimal balance = BigDecimal.ZERO; // Default balance is zero
 	
-	//Constructors
-	public Account () 
-	{
-		// Default constructor
-	}
-	
 	public Account(User user, String name, String email, String address, LocalDate dateOfBirth, BigDecimal balance) 
 	{
 		this.user = user;
