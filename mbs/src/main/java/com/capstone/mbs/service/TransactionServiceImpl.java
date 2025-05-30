@@ -1,16 +1,17 @@
 package com.capstone.mbs.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.capstone.mbs.dto.TransactionDTO;
+import com.capstone.mbs.dto.TransactionCreateDTO;
+import com.capstone.mbs.dto.TransactionResponseDTO;
 import com.capstone.mbs.entity.Account;
 import com.capstone.mbs.entity.Transaction;
 import com.capstone.mbs.repository.AccountRepository;
-//import com.capstone.mbs.entity.TransactionType;
 import com.capstone.mbs.repository.TransactionRepository;
 
 @Service
@@ -22,13 +23,8 @@ public class TransactionServiceImpl implements TransactionService {
 	@Autowired
 	private AccountRepository accountRepo;
 	
-//	private Sort defaultSort = Sort.by(Sort.Direction.DESC, "timestamp"); // default sorting to show most recent transactions first
-	
-	/*
-	 * Convert a Transaction entity to a TransactionDTO.
-	 */
-	private TransactionDTO convertToDTO(Transaction transaction) {
-	    return new TransactionDTO(
+	private TransactionResponseDTO convertToDTO(Transaction transaction) {
+	    return new TransactionResponseDTO(
 	        transaction.getTransactionId(),
 	        transaction.getSourceAccount() != null ? transaction.getSourceAccount().getAccountId() : null,
 	        transaction.getDestinationAccount() != null ? transaction.getDestinationAccount().getAccountId() : null,
@@ -36,46 +32,38 @@ public class TransactionServiceImpl implements TransactionService {
 	        transaction.getTimestamp()
 	    );
 	}
-	
-//	/*
-//	 * Retrieve the corresponding Transaction entity from the database based on the DTO's transaction ID.
-//	 */
-//	private Transaction retrieveEntityOfDTO(TransactionDTO transactionDTO) {
-//	    return transactionRepo.findById(transactionDTO.transactionId())
-//	            .orElseThrow(() -> new IllegalArgumentException("Transaction not found with ID: " + transactionDTO.transactionId()));
-//	}
 
 	@Override
-	public List<TransactionDTO> getAllTransactions() {
+	public List<TransactionResponseDTO> getAllTransactions() {
 		return transactionRepo.findAll().stream()
 				.map(this::convertToDTO)
 				.toList();
 	}
 
 	@Override
-	public List<TransactionDTO> getAllAccountTransactions(Long accountId) {
+	public List<TransactionResponseDTO> getAllAccountTransactions(Long accountId) {
 		return transactionRepo.findBySourceAccountAccountIdOrDestinationAccountAccountId(accountId).stream()
 				.map(this::convertToDTO)
 				.toList();
 	}
 
 	@Override
-	public TransactionDTO createTransaction(TransactionDTO transactionDTO) {
-		Optional<Account> sourceAccountOptional = accountRepo.findById(transactionDTO.sourceAccountId());
+	public TransactionResponseDTO createTransaction(TransactionCreateDTO transactionCreateDTO) {
+		Optional<Account> sourceAccountOptional = accountRepo.findById(transactionCreateDTO.sourceAccountId());
 		Account sourceAccount = sourceAccountOptional.orElseThrow(() -> 
-			new IllegalArgumentException("Source account not found with ID: " + transactionDTO.sourceAccountId()));
+			new IllegalArgumentException("Source account not found with ID: " + transactionCreateDTO.sourceAccountId()));
 		
-		Optional<Account> destinationAccountOptional = accountRepo.findById(transactionDTO.destinationAccountId());
+		Optional<Account> destinationAccountOptional = accountRepo.findById(transactionCreateDTO.destinationAccountId());
 		Account destinationAccount = destinationAccountOptional.orElseThrow(() -> 
-			new IllegalArgumentException("Destination account not found with ID: " + transactionDTO.destinationAccountId()));
+			new IllegalArgumentException("Destination account not found with ID: " + transactionCreateDTO.destinationAccountId()));
 		
 		Transaction transaction = new Transaction();
 		transaction.setSourceAccount(sourceAccount);
 		transaction.setDestinationAccount(destinationAccount);
-		transaction.setAmount(transactionDTO.amount());
-		transaction.setTimestamp(transactionDTO.timestamp());
+		transaction.setAmount(transactionCreateDTO.amount());
+		transaction.setTimestamp(LocalDateTime.now());
 		
-		TransactionDTO savedTransactionDTO = convertToDTO(transactionRepo.save(transaction));
+		TransactionResponseDTO savedTransactionDTO = convertToDTO(transactionRepo.save(transaction));
 		return savedTransactionDTO;
 	}
 
