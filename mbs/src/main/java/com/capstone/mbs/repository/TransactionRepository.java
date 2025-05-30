@@ -9,6 +9,6 @@ import com.capstone.mbs.entity.Transaction;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 	
 	// transaction history of specific account
-	List<Transaction> findBySourceAccountAccountIdOrDestinationAccountAccountId(Long accountId);
+	List<Transaction> findBySourceAccountAccountIdOrDestinationAccountAccountId(Long sourceAccountId, Long destinationAccountId);
 
 }

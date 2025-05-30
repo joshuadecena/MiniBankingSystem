@@ -42,7 +42,7 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Override
 	public List<TransactionResponseDTO> getAllAccountTransactions(Long accountId) {
-		return transactionRepo.findBySourceAccountAccountIdOrDestinationAccountAccountId(accountId).stream()
+		return transactionRepo.findBySourceAccountAccountIdOrDestinationAccountAccountId(accountId, accountId).stream()
 				.map(this::convertToDTO)
 				.toList();
 	}
