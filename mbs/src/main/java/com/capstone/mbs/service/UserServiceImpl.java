@@ -30,10 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class UserServiceImpl implements UserService {
+	private static final String NO_USER_WITH_ID = "User not found with id: ";
+    private static final String NAME_EXISTS = "Username already exists: ";
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private static final String NO_USER_WITH_ID = "User not found with id: ";
-    private static final String NAME_EXISTS = "Username already exists: ";
     
     @Override
     @Transactional
