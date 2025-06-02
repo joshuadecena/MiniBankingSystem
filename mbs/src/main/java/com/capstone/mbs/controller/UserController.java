@@ -10,6 +10,8 @@ import com.capstone.mbs.service.UserService;
 
 import jakarta.validation.Valid;
 
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -49,7 +51,7 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<UserResponseDTO>> getUserByUsername(@RequestParam String username) {
+    public ResponseEntity<Optional<UserResponseDTO>> getUserByUsername(@RequestParam String username) {
         return userService.getUserByUsername(username);
     }
 

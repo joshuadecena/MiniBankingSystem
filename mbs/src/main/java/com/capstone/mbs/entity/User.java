@@ -11,11 +11,18 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.Collection;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @AllArgsConstructor
 @Builder
@@ -24,7 +31,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Table(name = "user")
-public class User {
+public class User implements UserDetails {
+	private static final long serialVersionUID = 1L;
+	
+	@Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
+    }
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long userId;

@@ -47,10 +47,10 @@ public final class UserDTOMapper {
             .toList();
     }
 
-    // For authentication-related mappings
-    public static AuthResponseDTO toAuthResponseDTO(String token, User user) {
+    public static AuthResponseDTO toAuthResponseDTO(String accessToken, String refreshToken, User user) {
         return new AuthResponseDTO(
-            token,
+            accessToken,
+            refreshToken,
             user.getUserId(),
             user.getUsername(),
             user.getRole()
