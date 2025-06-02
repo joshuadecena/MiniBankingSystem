@@ -40,7 +40,7 @@ public class AccountController {
                          .orElseGet(() -> ResponseEntity.notFound().build());
     }
     
-    @GetMapping("/account/id/{accountId}")
+    @GetMapping("/{accountId}")
     public ResponseEntity<AccountDTO.AccountResponse> getAccountById(@PathVariable Long accountId) {
         return accountService.getAccountByAccountId(accountId)
                 .map(ResponseEntity::ok)
