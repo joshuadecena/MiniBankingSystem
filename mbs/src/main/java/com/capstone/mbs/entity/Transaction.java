@@ -23,11 +23,11 @@ public class Transaction {
 	private Long transactionId;
 	
 	@ManyToOne // many transactions to one account
-	@JoinColumn(name = "source_account_id", referencedColumnName = "account_id", nullable = true)
+	@JoinColumn(name = "source_account_id", referencedColumnName = "account_id", nullable = false)
 	private Account sourceAccount;
 	
 	@ManyToOne // many transactions to one account
-	@JoinColumn(name = "destination_account_id", referencedColumnName = "account_id", nullable = true)
+	@JoinColumn(name = "destination_account_id", referencedColumnName = "account_id", nullable = false)
 	private Account destinationAccount;
 	
 	@Column(name = "amount")
