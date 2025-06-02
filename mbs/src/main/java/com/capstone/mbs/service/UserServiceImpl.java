@@ -13,9 +13,10 @@ import com.capstone.mbs.exception.InvalidUsernameException;
 import com.capstone.mbs.exception.UserNotFoundException;
 import com.capstone.mbs.repository.UserRepository;
 
-import java.util.List;
-
 import jakarta.validation.Valid;
+
+import java.util.List;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,13 +24,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private static final String NO_USER_WITH_ID = "User not found with id: ";
@@ -76,12 +79,10 @@ public class UserServiceImpl implements UserService {
     
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<List<UserResponseDTO>> getUserByUsername(String username) {
-        List<User> users = userRepository.findByUsernameContainingIgnoreCase(username);
+    public ResponseEntity<Optional<UserResponseDTO>> getUserByUsername(String username) {
+    	Optional<User> user = userRepository.findByUsername(username);
         return ResponseEntity.ok(
-            users.stream()
-                .map(UserDTOMapper::toUserResponseDTO)
-                .toList()
+            user.map(UserDTOMapper::toUserResponseDTO)
         );
     }
     
@@ -171,5 +172,17 @@ public class UserServiceImpl implements UserService {
         if(password.length() < 6) {
             throw new InvalidPasswordException("Password must be at least 6 characters");
         }
+    }
+    
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UserNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
+        
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getUsername())
+                .password(user.getPassword())
+                .roles(user.getRole().name())
+                .build();
     }
 }

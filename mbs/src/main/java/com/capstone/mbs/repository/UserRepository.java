@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Optional<User> findByUsername(String username);
 	
 	// Get all users that contain the provided userId
-	List<User> findByUserIdContaining(long userId);
+	List<User> findByUserId(long userId);
 	
 	// Get all users that contain the provided username
 	List<User> findByUsernameContainingIgnoreCase(String username);
