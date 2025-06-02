@@ -8,8 +8,10 @@ import com.capstone.mbs.dto.UserUpdateUsernameDTO;
 import com.capstone.mbs.entity.User;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface UserService {
     // Create
@@ -18,7 +20,7 @@ public interface UserService {
     // Read
     ResponseEntity<List<UserResponseDTO>> getAllUsers();
     ResponseEntity<UserResponseDTO> getUserById(long userId);
-    ResponseEntity<List<UserResponseDTO>> getUserByUsername(String username);
+    ResponseEntity<Optional<UserResponseDTO>> getUserByUsername(String username);
     ResponseEntity<List<UserResponseDTO>> getUsersByRole(User.Role role);
 
     // Update
@@ -28,4 +30,7 @@ public interface UserService {
 
     // Delete
     ResponseEntity<Void> deleteUser(long userId);
+    
+    // UserDetails
+    UserDetails loadUserByUsername(String username);
 }
