@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,9 @@ public class TransactionServiceImpl implements TransactionService {
 	
 	@Autowired
 	private AccountRepository accountRepo;
+	
+    @Autowired
+    private MessageSource messageSource;
 	
 	private TransactionResponseDTO convertToDTO(Transaction transaction) {
 	    return new TransactionResponseDTO(
@@ -48,15 +53,22 @@ public class TransactionServiceImpl implements TransactionService {
 	public TransactionResponseDTO createTransaction(TransactionCreateDTO transactionCreateDTO) {
 		Optional<Account> sourceAccountOptional = accountRepo.findById(transactionCreateDTO.sourceAccountId());
 		Account sourceAccount = sourceAccountOptional.orElseThrow(() -> 
-			new IllegalArgumentException("Source account not found with ID: " + transactionCreateDTO.sourceAccountId())); // change to AccountNotFoundException
+			new IllegalArgumentException( // TODO: change to AccountNotFoundException
+				messageSource.getMessage("account.notfound", new Object[]{transactionCreateDTO.sourceAccountId()}, LocaleContextHolder.getLocale())
+			)
+		); 
 		
 		if (sourceAccount.getBalance().compareTo(transactionCreateDTO.amount()) < 0) {
-			throw new IllegalArgumentException("Cannot push through the transfer. Source account has insufficient balance."); // change to InsufficientBalanceException
+			throw new IllegalArgumentException( // TODO: change to InsufficientBalanceException
+				messageSource.getMessage("account.balance.insufficient", new Object[]{}, LocaleContextHolder.getLocale())); 
 		}
 		
 		Optional<Account> destinationAccountOptional = accountRepo.findById(transactionCreateDTO.destinationAccountId());
 		Account destinationAccount = destinationAccountOptional.orElseThrow(() -> 
-			new IllegalArgumentException("Destination account not found with ID: " + transactionCreateDTO.destinationAccountId())); // change to AccountNotFoundException
+			new IllegalArgumentException( // TODO: change to AccountNotFoundException
+				messageSource.getMessage("account.notfound", new Object[]{transactionCreateDTO.destinationAccountId()}, LocaleContextHolder.getLocale())
+			)
+		);
 		
 		sourceAccount.setBalance(sourceAccount.getBalance().subtract(transactionCreateDTO.amount()));
 		accountRepo.save(sourceAccount);
