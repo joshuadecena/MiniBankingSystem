@@ -33,7 +33,7 @@ public class TransactionController {
 	}
 	
 	@GetMapping("/{accountId}")
-	public ResponseEntity<Page<TransactionResponseDTO>> getAllAccountTransactions(@PathVariable Long accountId, Pageable pageable) {
+	public ResponseEntity<Page<TransactionResponseDTO>> getAccountTransactions(@PathVariable Long accountId, Pageable pageable) {
 		Page<TransactionResponseDTO> transactions = transactionService.getAllAccountTransactions(accountId, pageable);
 		
 		return ResponseEntity.ok(transactions);
