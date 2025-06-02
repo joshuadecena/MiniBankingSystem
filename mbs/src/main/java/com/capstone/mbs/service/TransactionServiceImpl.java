@@ -1,10 +1,11 @@
 package com.capstone.mbs.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.capstone.mbs.dto.TransactionCreateDTO;
@@ -34,28 +35,34 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public List<TransactionResponseDTO> getAllTransactions() {
-		return transactionRepo.findAll().stream()
-				.map(this::convertToDTO)
-				.toList();
+	public Page<TransactionResponseDTO> getAllTransactions(Pageable pageable) {
+		return transactionRepo.findAll(pageable).map(this::convertToDTO);
 	}
 
 	@Override
-	public List<TransactionResponseDTO> getAllAccountTransactions(Long accountId) {
-		return transactionRepo.findBySourceAccountAccountIdOrDestinationAccountAccountId(accountId, accountId).stream()
-				.map(this::convertToDTO)
-				.toList();
+	public Page<TransactionResponseDTO> getAllAccountTransactions(Long accountId, Pageable pageable) {
+		return transactionRepo.findBySourceAccountAccountIdOrDestinationAccountAccountId(accountId, accountId, pageable).map(this::convertToDTO);
 	}
 
 	@Override
 	public TransactionResponseDTO createTransaction(TransactionCreateDTO transactionCreateDTO) {
 		Optional<Account> sourceAccountOptional = accountRepo.findById(transactionCreateDTO.sourceAccountId());
 		Account sourceAccount = sourceAccountOptional.orElseThrow(() -> 
-			new IllegalArgumentException("Source account not found with ID: " + transactionCreateDTO.sourceAccountId()));
+			new IllegalArgumentException("Source account not found with ID: " + transactionCreateDTO.sourceAccountId())); // change to AccountNotFoundException
+		
+		if (sourceAccount.getBalance().compareTo(transactionCreateDTO.amount()) < 0) {
+			throw new IllegalArgumentException("Cannot push through the transfer. Source account has insufficient balance."); // change to InsufficientBalanceException
+		}
 		
 		Optional<Account> destinationAccountOptional = accountRepo.findById(transactionCreateDTO.destinationAccountId());
 		Account destinationAccount = destinationAccountOptional.orElseThrow(() -> 
-			new IllegalArgumentException("Destination account not found with ID: " + transactionCreateDTO.destinationAccountId()));
+			new IllegalArgumentException("Destination account not found with ID: " + transactionCreateDTO.destinationAccountId())); // change to AccountNotFoundException
+		
+		sourceAccount.setBalance(sourceAccount.getBalance().subtract(transactionCreateDTO.amount()));
+		accountRepo.save(sourceAccount);
+		
+		destinationAccount.setBalance(destinationAccount.getBalance().add(transactionCreateDTO.amount()));
+		accountRepo.save(destinationAccount);
 		
 		Transaction transaction = new Transaction();
 		transaction.setSourceAccount(sourceAccount);

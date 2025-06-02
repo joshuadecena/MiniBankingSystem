@@ -1,10 +1,11 @@
 package com.capstone.mbs.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,15 +26,15 @@ public class TransactionController {
 	private final TransactionServiceImpl transactionService;
 
 	@GetMapping("/all")
-	public ResponseEntity<List<TransactionResponseDTO>> getAllTransactions() {
-		List<TransactionResponseDTO> transactions = transactionService.getAllTransactions();
+	public ResponseEntity<Page<TransactionResponseDTO>> getAllTransactions(Pageable pageable) {
+		Page<TransactionResponseDTO> transactions = transactionService.getAllTransactions(pageable);
 		
 		return ResponseEntity.ok(transactions);
 	}
 	
 	@GetMapping("/{accountId}")
-	public ResponseEntity<List<TransactionResponseDTO>> getAllAccountTransactions(Long accountId) {
-		List<TransactionResponseDTO> transactions = transactionService.getAllAccountTransactions(accountId);
+	public ResponseEntity<Page<TransactionResponseDTO>> getAllAccountTransactions(@PathVariable Long accountId, Pageable pageable) {
+		Page<TransactionResponseDTO> transactions = transactionService.getAllAccountTransactions(accountId, pageable);
 		
 		return ResponseEntity.ok(transactions);
 	}
