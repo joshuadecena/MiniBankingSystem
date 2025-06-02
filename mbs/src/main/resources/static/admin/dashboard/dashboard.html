@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="adminDashboardApp" ng-controller="DashboardController as ctrl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Dashboard</title>
+
+    <!-- Metrobank Inspired Colors -->
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background-color: #003a70; /* Metrobank dark blue */
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        nav {
+            display: flex;
+            background-color: #00539c; /* Metrobank blue */
+            padding: 0.5rem 2rem;
+        }
+
+        nav button {
+            flex: 1;
+            padding: 0.75rem;
+            background: transparent;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        nav button.active,
+        nav button:hover {
+            background-color: #ec1c24; /* Metrobank red */
+            color: white;
+        }
+
+        main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .filter-section {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-section input,
+        .filter-section select {
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-width: 200px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #00539c;
+            color: white;
+            user-select: none;
+        }
+
+        tr:hover {
+            background-color: #f0f8ff;
+        }
+
+        .pagination {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .pagination button {
+            background-color: #00539c;
+            border: none;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination button[disabled] {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .pagination button:hover:not([disabled]) {
+            background-color: #ec1c24;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .filter-section {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    <!-- AngularJS CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+</head>
+
+<body>
+    <header>Admin Dashboard</header>
+
+    <nav>
+        <button ng-class="{active: ctrl.activeTab === 'accounts'}" ng-click="ctrl.setTab('accounts')">Accounts</button>
+        <button ng-class="{active: ctrl.activeTab === 'transactions'}" ng-click="ctrl.setTab('transactions')">Transactions</button>
+    </nav>
+
+    <main>
+
+        <!-- Accounts Tab -->
+        <section ng-if="ctrl.activeTab === 'accounts'">
+            <div class="filter-section">
+                <input type="text" placeholder="Search by name or email" ng-model="ctrl.accountFilter" ng-change="ctrl.loadAccounts(0)" />
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Account ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Date of Birth</th>
+                        <th>Balance (PHP)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="account in ctrl.accounts.content">
+                        <td>{{account.accountId}}</td>
+                        <td>{{account.name}}</td>
+                        <td>{{account.email}}</td>
+                        <td>{{account.address}}</td>
+                        <td>{{account.dateOfBirth | date:'yyyy-MM-dd'}}</td>
+                        <td>{{account.balance | currency:'₱'}}</td>
+                    </tr>
+                    <tr ng-if="!ctrl.accounts.content.length">
+                        <td colspan="6" style="text-align:center;">No accounts found.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination" ng-if="ctrl.accounts.totalPages > 1">
+                <button ng-disabled="ctrl.accounts.first" ng-click="ctrl.loadAccounts(ctrl.accounts.number - 1)">Prev</button>
+                <button ng-repeat="page in ctrl.getPages(ctrl.accounts.totalPages)"
+                    ng-class="{ 'active': page === ctrl.accounts.number }"
+                    ng-click="ctrl.loadAccounts(page)">{{page + 1}}</button>
+                <button ng-disabled="ctrl.accounts.last" ng-click="ctrl.loadAccounts(ctrl.accounts.number + 1)">Next</button>
+            </div>
+        </section>
+
+        <!-- Transactions Tab -->
+        <section ng-if="ctrl.activeTab === 'transactions'">
+            <div class="filter-section">
+                <select ng-model="ctrl.transactionType" ng-change="ctrl.loadTransactions(0)">
+                    <option value="">All Types</option>
+                    <option value="debit">Debit</option>
+                    <option value="credit">Credit</option>
+                </select>
+
+                <input type="number" placeholder="Filter by Account ID" ng-model="ctrl.transactionAccountId" ng-change="ctrl.loadTransactions(0)" />
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Account ID</th>
+                        <th>Amount (PHP)</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="tx in ctrl.transactions.content">
+                        <td>{{tx.transactionId}}</td>
+                        <td>{{tx.accountId}}</td>
+                        <td>{{tx.amount | currency:'₱'}}</td>
+                        <td>{{tx.type | uppercase}}</td>
+                        <td>{{tx.transactionDate | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+                    </tr>
+                    <tr ng-if="!ctrl.transactions.content.length">
+                        <td colspan="5" style="text-align:center;">No transactions found.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination" ng-if="ctrl.transactions.totalPages > 1">
+                <button ng-disabled="ctrl.transactions.first" ng-click="ctrl.loadTransactions(ctrl.transactions.number - 1)">Prev</button>
+                <button ng-repeat="page in ctrl.getPages(ctrl.transactions.totalPages)"
+                    ng-class="{ 'active': page === ctrl.transactions.number }"
+                    ng-click="ctrl.loadTransactions(page)">{{page + 1}}</button>
+                <button ng-disabled="ctrl.transactions.last" ng-click="ctrl.loadTransactions(ctrl.transactions.number + 1)">Next</button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        angular.module('adminDashboardApp', [])
+            .controller('DashboardController', ['$http', function ($http) {
+                const vm = this;
+
+                vm.activeTab = 'accounts';
+
+                // --- Accounts ---
+                vm.accountFilter = '';
+                vm.accounts = {
+                    content: [],
+                    number: 0,
+                    totalPages: 0,
+                    first: true,
+                    last: true
+                };
+
+                // --- Transactions ---
+                vm.transactionType = '';
+                vm.transactionAccountId = null;
+                vm.transactions = {
+                    content: [],
+                    number: 0,
+                    totalPages: 0,
+                    first: true,
+                    last: true
+                };
+
+                vm.setTab = function (tab) {
+                    vm.activeTab = tab;
+                    if (tab === 'accounts') {
+                        vm.loadAccounts(0);
+                    } else if (tab === 'transactions') {
+                        vm.loadTransactions(0);
+                    }
+                };
+
+                vm.getPages = function (totalPages) {
+                    return Array.from({ length: totalPages }, (_, i) => i);
+                };
+
+                vm.loadAccounts = function (page) {
+                    const params = {
+                        page: page,
+                        size: 10,
+                        sort: 'accountId,asc'
+                    };
+                    if (vm.accountFilter && vm.accountFilter.trim() !== '') {
+                        params.filter = vm.accountFilter.trim();
+                    }
+
+                    $http.get('/admin/accounts', { params: params }).then(function (response) {
+                        vm.accounts = response.data;
+                    }, function (error) {
+                        console.error('Error loading accounts:', error);
+                        vm.accounts = { content: [], number: 0, totalPages: 0, first: true, last: true };
+                    });
+                };
+
+                vm.loadTransactions = function (page) {
+                    const params = {
+                        page: page,
+                        size: 10,
+                        sort: 'transactionDate,desc'
+                    };
+                    if (vm.transactionType) {
+                        params.type = vm.transactionType;
+                    }
+                    if (vm.transactionAccountId) {
+                        params.accountId = vm.transactionAccountId;
+                    }
+
+                    $http.get('/admin/transactions', { params: params }).then(function (response) {
+                        vm.transactions = response.data;
+                    }, function (error) {
+                        console.error('Error loading transactions:', error);
+                        vm.transactions = { content: [], number: 0, totalPages: 0, first: true, last: true };
+                    });
+                };
+
+                // Load accounts by default on page load
+                vm.loadAccounts(0);
+
+            }]);
+    </script>
+</body>
+
+</html>
