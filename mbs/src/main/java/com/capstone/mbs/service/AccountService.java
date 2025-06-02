@@ -1,9 +1,11 @@
 package com.capstone.mbs.service;
 
 import com.capstone.mbs.dto.AccountDTO;
+import com.capstone.mbs.dto.PagedResponseDTO;
 
-import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Pageable;
 
 
 public interface AccountService {
@@ -13,7 +15,7 @@ public interface AccountService {
  	* This method is used to fetch the account associated with a specific user.
      */
     
-    List<AccountDTO.AccountResponse> getAllAccounts();
+	PagedResponseDTO<AccountDTO.AccountResponse> getAllAccounts(Pageable pageable);
     
     Optional<AccountDTO.AccountResponse> getAccountByUserId(Long userId);
     

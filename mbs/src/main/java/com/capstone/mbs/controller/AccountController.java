@@ -1,8 +1,10 @@
 package com.capstone.mbs.controller;
 
 import com.capstone.mbs.dto.AccountDTO;
+import com.capstone.mbs.dto.PagedResponseDTO;
 import com.capstone.mbs.service.AccountService;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,11 +54,11 @@ public class AccountController {
      *
      * @return List of all account response DTOs.
      */
-    @GetMapping
+    @GetMapping("/all")
     // @PreAuthorize("hasRole('ADMIN')") // optional security
-    public ResponseEntity<List<AccountDTO.AccountResponse>> getAllAccounts() {
+    public ResponseEntity<PagedResponseDTO<AccountDTO.AccountResponse>> getAllAccounts(Pageable pageable) {
         // You need to add a method in your service layer that fetches all accounts
-        List<AccountDTO.AccountResponse> accounts = accountService.getAllAccounts();
+    	PagedResponseDTO<AccountDTO.AccountResponse> accounts = accountService.getAllAccounts(pageable);
         return ResponseEntity.ok(accounts);
     }
 
