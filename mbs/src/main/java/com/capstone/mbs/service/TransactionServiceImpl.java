@@ -14,6 +14,8 @@ import com.capstone.mbs.dto.TransactionCreateDTO;
 import com.capstone.mbs.dto.TransactionResponseDTO;
 import com.capstone.mbs.entity.Account;
 import com.capstone.mbs.entity.Transaction;
+import com.capstone.mbs.exception.AccountNotFoundException;
+import com.capstone.mbs.exception.InsufficientBalanceException;
 import com.capstone.mbs.repository.AccountRepository;
 import com.capstone.mbs.repository.TransactionRepository;
 
@@ -53,19 +55,19 @@ public class TransactionServiceImpl implements TransactionService {
 	public TransactionResponseDTO createTransaction(TransactionCreateDTO transactionCreateDTO) {
 		Optional<Account> sourceAccountOptional = accountRepo.findById(transactionCreateDTO.sourceAccountId());
 		Account sourceAccount = sourceAccountOptional.orElseThrow(() -> 
-			new IllegalArgumentException( // TODO: change to AccountNotFoundException
+			new AccountNotFoundException( 
 				messageSource.getMessage("account.notfound", new Object[]{transactionCreateDTO.sourceAccountId()}, LocaleContextHolder.getLocale())
 			)
 		); 
 		
 		if (sourceAccount.getBalance().compareTo(transactionCreateDTO.amount()) < 0) {
-			throw new IllegalArgumentException( // TODO: change to InsufficientBalanceException
+			throw new InsufficientBalanceException( 
 				messageSource.getMessage("account.balance.insufficient", new Object[]{}, LocaleContextHolder.getLocale())); 
 		}
 		
 		Optional<Account> destinationAccountOptional = accountRepo.findById(transactionCreateDTO.destinationAccountId());
 		Account destinationAccount = destinationAccountOptional.orElseThrow(() -> 
-			new IllegalArgumentException( // TODO: change to AccountNotFoundException
+			new AccountNotFoundException( 
 				messageSource.getMessage("account.notfound", new Object[]{transactionCreateDTO.destinationAccountId()}, LocaleContextHolder.getLocale())
 			)
 		);
