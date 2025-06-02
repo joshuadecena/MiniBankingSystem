@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capstone.mbs.dto.PagedResponseDTO;
 import com.capstone.mbs.dto.TransactionCreateDTO;
 import com.capstone.mbs.dto.TransactionResponseDTO;
 import com.capstone.mbs.service.TransactionServiceImpl;
@@ -26,15 +27,15 @@ public class TransactionController {
 	private final TransactionServiceImpl transactionService;
 
 	@GetMapping("/all")
-	public ResponseEntity<Page<TransactionResponseDTO>> getAllTransactions(Pageable pageable) {
-		Page<TransactionResponseDTO> transactions = transactionService.getAllTransactions(pageable);
+	public ResponseEntity<PagedResponseDTO<TransactionResponseDTO>> getAllTransactions(Pageable pageable) {
+		PagedResponseDTO<TransactionResponseDTO> transactions = transactionService.getAllTransactions(pageable);
 		
 		return ResponseEntity.ok(transactions);
 	}
 	
 	@GetMapping("/{accountId}")
-	public ResponseEntity<Page<TransactionResponseDTO>> getAccountTransactions(@PathVariable Long accountId, Pageable pageable) {
-		Page<TransactionResponseDTO> transactions = transactionService.getAllAccountTransactions(accountId, pageable);
+	public ResponseEntity<PagedResponseDTO<TransactionResponseDTO>> getAccountTransactions(@PathVariable Long accountId, Pageable pageable) {
+		PagedResponseDTO<TransactionResponseDTO> transactions = transactionService.getAllAccountTransactions(accountId, pageable);
 		
 		return ResponseEntity.ok(transactions);
 	}
