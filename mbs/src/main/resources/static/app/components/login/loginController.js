@@ -1,16 +1,16 @@
-angular.module('bankingApp').controller('LoginController', function($scope, $http, $window) {
+angular.module('bankingApp').controller('LoginController', ['$scope', '$http', '$window', function($scope, $http, $window) {
     $scope.credentials = {
         username: '',
         password: ''
     };
-
+ 
     $scope.error = null;
-
+ 
     $scope.login = function() {
         $scope.error = null;
-
+ 
         const data = `username=${encodeURIComponent($scope.credentials.username)}&password=${encodeURIComponent($scope.credentials.password)}`;
-
+ 
         $http({
             method: 'POST',
             url: '/api/auth/login',
@@ -24,4 +24,5 @@ angular.module('bankingApp').controller('LoginController', function($scope, $htt
             $scope.error = 'Invalid username or password';
         });
     };
-});
+}]);
+ 
