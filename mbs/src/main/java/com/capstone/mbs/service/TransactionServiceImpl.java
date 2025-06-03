@@ -1,6 +1,7 @@
 package com.capstone.mbs.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.capstone.mbs.dto.PagedResponseDTO;
 import com.capstone.mbs.dto.TransactionCreateDTO;
 import com.capstone.mbs.dto.TransactionResponseDTO;
 import com.capstone.mbs.entity.Account;
@@ -42,13 +44,47 @@ public class TransactionServiceImpl implements TransactionService {
 	}
 
 	@Override
-	public Page<TransactionResponseDTO> getAllTransactions(Pageable pageable) {
-		return transactionRepo.findAll(pageable).map(this::convertToDTO);
+	public PagedResponseDTO<TransactionResponseDTO> getAllTransactions(Pageable pageable) {
+		Page<TransactionResponseDTO> transactionsPage = transactionRepo
+			.findAll(pageable)
+			.map(this::convertToDTO);
+		
+		List<PagedResponseDTO.SortOrder> sortOrders = transactionsPage
+			.getSort().stream()
+			.map(order -> new PagedResponseDTO.SortOrder(order.getProperty(), order.getDirection().name()))
+			.toList();
+		
+		return new PagedResponseDTO<>(
+			transactionsPage.getContent(),
+			transactionsPage.getNumber(),
+			transactionsPage.getSize(),
+			transactionsPage.getTotalElements(),
+			transactionsPage.getTotalPages(),
+			transactionsPage.isLast(),
+			sortOrders
+		);
 	}
 
 	@Override
-	public Page<TransactionResponseDTO> getAllAccountTransactions(Long accountId, Pageable pageable) {
-		return transactionRepo.findBySourceAccountAccountIdOrDestinationAccountAccountId(accountId, accountId, pageable).map(this::convertToDTO);
+	public PagedResponseDTO<TransactionResponseDTO> getAllAccountTransactions(Long accountId, Pageable pageable) {
+		Page<TransactionResponseDTO> transactionsPage = transactionRepo
+			.findBySourceAccountAccountIdOrDestinationAccountAccountId(accountId, accountId, pageable)
+			.map(this::convertToDTO);
+		
+		List<PagedResponseDTO.SortOrder> sortOrders = transactionsPage
+			.getSort().stream()
+			.map(order -> new PagedResponseDTO.SortOrder(order.getProperty(), order.getDirection().name()))
+			.toList();
+		
+		return new PagedResponseDTO<>(
+			transactionsPage.getContent(),
+			transactionsPage.getNumber(),
+			transactionsPage.getSize(),
+			transactionsPage.getTotalElements(),
+			transactionsPage.getTotalPages(),
+			transactionsPage.isLast(),
+			sortOrders
+		);
 	}
 
 	@Override

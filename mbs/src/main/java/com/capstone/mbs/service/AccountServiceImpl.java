@@ -1,10 +1,12 @@
 package com.capstone.mbs.service;
 
 import com.capstone.mbs.dto.AccountDTO;
+import com.capstone.mbs.dto.PagedResponseDTO;
 import com.capstone.mbs.entity.Account;
 import com.capstone.mbs.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,11 +58,25 @@ public class AccountServiceImpl implements AccountService {
 	
 	// Get all accounts
 	@Override
-	public List<AccountDTO.AccountResponse> getAllAccounts() {
-	    return accountRepository.findAll()
-	        .stream()
-	        .map(this::mapToDto)
-	        .collect(Collectors.toList());
+	public PagedResponseDTO<AccountDTO.AccountResponse> getAllAccounts(Pageable pageable) {
+		Page<AccountDTO.AccountResponse> accountsPage = accountRepository
+			.findAll(pageable)
+			.map(this::mapToDto);
+		
+		List<PagedResponseDTO.SortOrder> sortOrders = accountsPage
+			.getSort().stream()
+			.map(order -> new PagedResponseDTO.SortOrder(order.getProperty(), order.getDirection().name()))
+			.toList();
+		
+		return new PagedResponseDTO<>(
+			accountsPage.getContent(),
+			accountsPage.getNumber(),
+			accountsPage.getSize(),
+			accountsPage.getTotalElements(),
+			accountsPage.getTotalPages(),
+			accountsPage.isLast(),
+			sortOrders
+		);
 	}
 	
 //  Convert DTO request to Entity (for updates)
