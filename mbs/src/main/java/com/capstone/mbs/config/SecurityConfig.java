@@ -23,7 +23,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URLS = {
-        "/api/auth/**"
+        "/api/auth/**",
+        "api/users/**",
+        "/js/**"
     };
 
     private final JwtAuthenticationFilter jwtAuthFilter;
@@ -33,6 +35,7 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(req -> req
+            	.requestMatchers("/", "/login").anonymous()
                 .requestMatchers(WHITE_LIST_URLS).permitAll()
                 .anyRequest().authenticated()
             )
