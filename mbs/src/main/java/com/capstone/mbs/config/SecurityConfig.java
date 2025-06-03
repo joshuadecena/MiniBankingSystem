@@ -24,23 +24,23 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfig {
-	
-	@Bean
-	public InMemoryUserDetailsManager userDetailsService(PasswordEncoder encoder) {
-		UserDetails user = User.builder()
-				.username("user")
-				.password(encoder.encode("password"))
-				.roles("USER")
-				.build();
-		
-		UserDetails admin = User.builder()
-				.username("admin")
-				.password(encoder.encode("admin123"))
-				.roles("ADMIN")
-				.build();
-		
-		return new InMemoryUserDetailsManager(user, admin);
-	}
+
+//	@Bean
+//	public InMemoryUserDetailsManager userDetailsService(PasswordEncoder encoder) {
+//		UserDetails user = User.builder()
+//				.username("user")
+//				.password(encoder.encode("password"))
+//				.roles("USER")
+//				.build();
+//		
+//		UserDetails admin = User.builder()
+//				.username("admin")
+//				.password(encoder.encode("admin123"))
+//				.roles("ADMIN")
+//				.build();
+//		
+//		return new InMemoryUserDetailsManager(user, admin);
+//	}
 
     private static final String[] WHITE_LIST_URLS = {
         "/api/auth/**"

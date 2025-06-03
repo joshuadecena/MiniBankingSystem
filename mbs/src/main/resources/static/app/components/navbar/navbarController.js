@@ -1,4 +1,4 @@
-angular.module('miniBankingApp')
+angular.module('bankingApp')
   .controller('NavbarController', ['authService', '$location', function(authService, $location) {
     var vm = this;
 

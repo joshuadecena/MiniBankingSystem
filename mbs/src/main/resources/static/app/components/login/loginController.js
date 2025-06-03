@@ -13,13 +13,13 @@ angular.module('bankingApp').controller('LoginController', ['$scope', '$http', '
  
         $http({
             method: 'POST',
-            url: '/perform_login',
-            data: data,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            url: '/api/auth/login',
+            data: $scope.credentials,
+            headers: { 'Content-Type': 'application/json' },
             withCredentials: true  // ensure cookies (session) are sent/received properly
         }).then(function(response) {
             // Force redirect to dashboard after login success
-            $window.location.href = '/admin/dashboard/dashboard.html';
+            $window.location.href = '/dashboard/admin'; // or '/dashboard/customer' based on user role
         }, function(errorResponse) {
             $scope.error = 'Invalid username or password';
         });
