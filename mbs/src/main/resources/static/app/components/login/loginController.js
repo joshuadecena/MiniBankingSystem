@@ -13,9 +13,9 @@ angular.module('bankingApp').controller('LoginController', function($scope, $htt
 
         $http({
             method: 'POST',
-            url: '/perform_login',
-            data: data,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            url: '/api/auth/login',
+			data: $scope.credentials,  // send as raw JSON
+			headers: { 'Content-Type': 'application/json' },  // declare JSON type
             withCredentials: true  // ensure cookies (session) are sent/received properly
         }).then(function(response) {
             // Force redirect to dashboard after login success

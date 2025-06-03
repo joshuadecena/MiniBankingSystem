@@ -4,6 +4,7 @@ import com.capstone.mbs.dto.AuthResponseDTO;
 import com.capstone.mbs.dto.LoginRequestDTO;
 import com.capstone.mbs.dto.RefreshTokenRequestDTO;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,13 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginRequestDTO request) {
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDTO request) {
+        try {
+            return ResponseEntity.ok(authenticationService.authenticate(request));
+        } catch (Exception e) {
+            e.printStackTrace();  // Log to console
+            return ResponseEntity.status(200).body("Login failed: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+        }
     }
 
     @PostMapping("/refresh-token")
