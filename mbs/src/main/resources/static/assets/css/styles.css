@@ -1,0 +1,85 @@
+/* MetroBank Color Scheme */
+:root {
+    --metro-blue: #005BAE;  /* MetroBank's primary blue */
+    --metro-blue-dark: #004a8f;
+    --metro-blue-light: #e6f0fa;
+    --metro-white: #ffffff;
+    --metro-gray: #f8f9fa;
+}
+
+body {
+    background-color: var(--metro-gray);
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: var(--metro-white);
+}
+
+.login-wrapper {
+    max-width: 400px;
+    width: 100%;
+    padding: 2rem;
+    background: var(--metro-white);
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.brand-header img {
+    max-width: 100%;
+    height: auto;
+}
+
+.text-metro-blue {
+    color: var(--metro-blue);
+}
+
+.btn-metro-blue {
+    background-color: var(--metro-blue);
+    border-color: var(--metro-blue);
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-metro-blue:hover {
+    background-color: var(--metro-blue-dark);
+    border-color: var(--metro-blue-dark);
+    color: white;
+}
+
+.form-control:focus {
+    border-color: var(--metro-blue);
+    box-shadow: 0 0 0 0.25rem rgba(0, 91, 174, 0.25);
+}
+
+.login-footer {
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+}
+
+/* Floating labels adjustment */
+.form-floating>label {
+    padding-left: 2.5rem;
+}
+
+.form-floating>.form-control {
+    padding-left: 3rem;
+}
+
+.form-floating>.form-control~label::after {
+    background-color: transparent;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .login-wrapper {
+        padding: 1.5rem;
+        box-shadow: none;
+    }
+}
