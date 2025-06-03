@@ -1,0 +1,21 @@
+<div class="container login-container mt-5">
+  <div class="card shadow-lg p-4 border-0 rounded-4">
+    <h3 class="text-center mb-4 text-primary">Mini Banking Login</h3>
+
+    <form ng-submit="login()">
+      <div class="form-group mb-3">
+        <label for="username">Username</label>
+        <input type="text" class="form-control" id="username" ng-model="credentials.username" required>
+      </div>
+
+      <div class="form-group mb-4">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" ng-model="credentials.password" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Login</button>
+
+      <p class="text-danger mt-3 text-center" ng-if="errorMessage">{{ errorMessage }}</p>
+    </form>
+  </div>
+</div>
