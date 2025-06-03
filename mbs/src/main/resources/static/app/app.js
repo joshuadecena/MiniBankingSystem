@@ -23,7 +23,7 @@ angular.module('bankingApp', ['ngRoute'])
         },
         controller: function($scope, $location) {
             var role = localStorage.getItem('userRole');
-
+ 
             if (role === 'admin') {
                 // Dynamically load admin controller
                 // You may need to register it or use ng-controller in admin.html
@@ -55,9 +55,9 @@ angular.module('bankingApp', ['ngRoute'])
     })
     .otherwise({ redirectTo: '/login' });
 })
-.run(function($rootScope, $location, AuthService) {
+.run(function($rootScope, $location, $authService) {
     $rootScope.$on('$routeChangeStart', function(event, next) {
-        if (next.originalPath !== '/login' && !AuthService.isAuthenticated()) {
+        if (next.originalPath !== '/login' && !$authService.isAuthenticated()) {
             $location.path('/login');
         }
     });
