@@ -3,33 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <title>Minibank Admin Dashboard</title>
+
   <link rel="stylesheet" href="/app/dashboard/admin/admin.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 
 <body>
-  <!-- Topbar -->
+  <!-- Top header with navbar links -->
   <header class="topbar">
     <div class="logo">Minibank</div>
     <nav class="topnav">
       <ul>
-        <li ng-class="{active: view==='accounts'}" ng-click="setView('accounts')">
-          <i class="fa fa-users"></i> Accounts
-        </li>
-        <li ng-class="{active: view==='transactions'}" ng-click="setView('transactions')">
-          <i class="fa fa-list-alt"></i> Transactions
-        </li>
-        <li class="logout" ng-click="logout()">
-          <i class="fa fa-sign-out"></i> Logout
-        </li>
+        <li ng-class="{active: view==='accounts'}" ng-click="setView('accounts')">Accounts</li>
+        <li ng-class="{active: view==='transactions'}" ng-click="setView('transactions')">Transactions</li>
+        <li class="logout" ng-click="logout()">Logout</li>
       </ul>
     </nav>
   </header>
 
+  <!-- Main content -->
   <main class="main-content">
     <!-- Accounts View -->
-    <section ng-if="view === 'accounts'">
+    <section ng-if="view==='accounts'">
       <h2>Customer Accounts</h2>
       <div class="table-wrapper">
         <table>
@@ -45,7 +41,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="account in paginatedAccounts()">
+            <tr ng-repeat="account in accounts">
               <td>{{account.accountId}}</td>
               <td>{{account.name}}</td>
               <td>{{account.email}}</td>
@@ -57,24 +53,18 @@
           </tbody>
         </table>
       </div>
-
-      <!-- Pagination controls -->
-      <div style="margin-top: 16px;">
-        <button ng-disabled="currentPage === 0" ng-click="prevPage()">Previous</button>
-        Page {{currentPage + 1}} of {{numPages()}}
-        <button ng-disabled="currentPage >= numPages() - 1" ng-click="nextPage()">Next</button>
-      </div>
     </section>
 
     <!-- Transactions View -->
-    <section ng-if="view === 'transactions'">
+    <section ng-if="view==='transactions'">
       <h2>Transactions</h2>
       <div class="transaction-search">
         <input
           type="text"
           placeholder="Enter Account Number or User ID"
-          ng-model="searchAccountInput"
-          ng-keypress="checkEnter($event)" />
+          ng-model="searchAccount"
+          ng-keypress="checkEnter($event)"
+        />
         <button ng-click="loadTransactions()">Search</button>
       </div>
 

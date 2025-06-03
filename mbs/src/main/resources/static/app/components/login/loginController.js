@@ -1,39 +1,28 @@
-angular.module('bankingApp').controller('LoginController', ['$scope', '$http', '$window', 'authService',
-  function($scope, $http, $window, authService) {
+angular.module('bankingApp').controller('LoginController', ['$scope', '$http', '$window', function($scope, $http, $window) {
     $scope.credentials = {
-      username: '',
-      password: ''
+        username: '',
+        password: ''
     };
-
+ 
     $scope.error = null;
-
+ 
     $scope.login = function() {
-      $scope.error = null;
-
-      $http.post('/api/auth/login', $scope.credentials, {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true
-      }).then(function(response) {
-        const userData = {
-          token: response.data.token,
-          username: response.data.username,
-          role: response.data.role
-        };
-
-        // Save user data in localStorage via authService
-        authService.setUser(userData);
-
-        // Redirect user based on role
-        if (userData.role === 'ADMIN') {
-          $window.location.href = '/dashboard/admin';
-        } else if (userData.role === 'CUSTOMER') {
-          $window.location.href = '/dashboard/customer';
-        } else {
-          $window.location.href = '/';
-        }
-      }, function(errorResponse) {
-        $scope.error = 'Invalid username or password';
-      });
+        $scope.error = null;
+ 
+        const data = `username=${encodeURIComponent($scope.credentials.username)}&password=${encodeURIComponent($scope.credentials.password)}`;
+ 
+        $http({
+            method: 'POST',
+            url: '/api/auth/login',
+            data: $scope.credentials,
+            headers: { 'Content-Type': 'application/json' },
+            withCredentials: true  // ensure cookies (session) are sent/received properly
+        }).then(function(response) {
+            // Force redirect to dashboard after login success
+            $window.location.href = '/dashboard/admin'; // or '/dashboard/customer' based on user role
+        }, function(errorResponse) {
+            $scope.error = 'Invalid username or password';
+        });
     };
-  }
-]);
+}]);
+ 

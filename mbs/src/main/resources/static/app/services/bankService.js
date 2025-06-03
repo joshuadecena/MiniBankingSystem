@@ -25,5 +25,4 @@ angular.module('bankingApp')
   };
 
   // Optional: Add more service methods here for future features
-
 });
