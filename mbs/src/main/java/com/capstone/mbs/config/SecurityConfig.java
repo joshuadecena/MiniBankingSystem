@@ -11,16 +11,36 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfig {
+	
+	@Bean
+	public InMemoryUserDetailsManager userDetailsService(PasswordEncoder encoder) {
+		UserDetails user = User.builder()
+				.username("user")
+				.password(encoder.encode("password"))
+				.roles("USER")
+				.build();
+		
+		UserDetails admin = User.builder()
+				.username("admin")
+				.password(encoder.encode("admin123"))
+				.roles("ADMIN")
+				.build();
+		
+		return new InMemoryUserDetailsManager(user, admin);
+	}
 
     private static final String[] WHITE_LIST_URLS = {
         "/api/auth/**"

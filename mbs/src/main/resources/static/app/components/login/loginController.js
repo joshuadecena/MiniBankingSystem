@@ -19,7 +19,7 @@ angular.module('bankingApp').controller('LoginController', function($scope, $htt
             withCredentials: true  // ensure cookies (session) are sent/received properly
         }).then(function(response) {
             // Force redirect to dashboard after login success
-            $window.location.href = '/dashboard/dashboard.html';
+            $window.location.href = '/admin/dashboard/dashboard.html';
         }, function(errorResponse) {
             $scope.error = 'Invalid username or password';
         });
