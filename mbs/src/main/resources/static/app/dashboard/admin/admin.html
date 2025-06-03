@@ -5,110 +5,97 @@
   <title>Minibank Admin Dashboard</title>
 
   <link rel="stylesheet" href="/app/dashboard/admin/admin.css" />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 
 <body>
-  <!-- Top header -->
+  <!-- Top header with navbar links -->
   <header class="topbar">
     <div class="logo">Minibank</div>
-  </header>
-
-  <div class="dashboard-container">
-    <!-- Side navigation -->
-    <nav class="sidebar">
+    <nav class="topnav">
       <ul>
-        <li ng-class="{active: view==='accounts'}" ng-click="setView('accounts')">
-          <i class="fa fa-users"></i> Accounts
-        </li>
-        <li ng-class="{active: view==='transactions'}" ng-click="setView('transactions')">
-          <i class="fa fa-list-alt"></i> Transactions
-        </li>
-        <li class="logout" ng-click="logout()">
-          <i class="fa fa-sign-out"></i> Logout
-        </li>
+        <li ng-class="{active: view==='accounts'}" ng-click="setView('accounts')">Accounts</li>
+        <li ng-class="{active: view==='transactions'}" ng-click="setView('transactions')">Transactions</li>
+        <li class="logout" ng-click="logout()">Logout</li>
       </ul>
     </nav>
+  </header>
 
-    <!-- Main content -->
-    <main class="main-content">
-      <!-- Accounts View -->
-      <section ng-if="view==='accounts'">
-        <h2>Customer Accounts</h2>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Account No.</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Address</th>
-                <th>User ID</th>
-                <th>Date of Birth</th>
-                <th>Balance</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr ng-repeat="account in accounts">
-                <td>{{account.accountId}}</td>
-                <td>{{account.name}}</td>
-                <td>{{account.email}}</td>
-                <td>{{account.address}}</td>
-                <td>{{account.userId}}</td>
-                <td>{{account.dateOfBirth | date:'MMM d, yyyy'}}</td>
-                <td>{{account.balance | currency:"₱"}}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+  <!-- Main content -->
+  <main class="main-content">
+    <!-- Accounts View -->
+    <section ng-if="view==='accounts'">
+      <h2>Customer Accounts</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Account No.</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Address</th>
+              <th>User ID</th>
+              <th>Date of Birth</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="account in accounts">
+              <td>{{account.accountId}}</td>
+              <td>{{account.name}}</td>
+              <td>{{account.email}}</td>
+              <td>{{account.address}}</td>
+              <td>{{account.userId}}</td>
+              <td>{{account.dateOfBirth | date:'MMM d, yyyy'}}</td>
+              <td>{{account.balance | currency:"₱"}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
 
-      <!-- Transactions View -->
-      <section ng-if="view==='transactions'">
-        <h2>Transactions</h2>
-        <div class="transaction-search">
-          <input
-            type="text"
-            placeholder="Enter Account Number or User ID"
-            ng-model="searchAccount"
-            ng-keypress="checkEnter($event)"
-          />
-          <button ng-click="loadTransactions()">Search</button>
-        </div>
+    <!-- Transactions View -->
+    <section ng-if="view==='transactions'">
+      <h2>Transactions</h2>
+      <div class="transaction-search">
+        <input
+          type="text"
+          placeholder="Enter Account Number or User ID"
+          ng-model="searchAccount"
+          ng-keypress="checkEnter($event)"
+        />
+        <button ng-click="loadTransactions()">Search</button>
+      </div>
 
-        <div ng-if="transactions.length > 0" class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Amount</th>
-                <th>Balance</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr ng-repeat="txn in transactions">
-                <td>{{txn.date | date:'MMM d, yyyy h:mm a'}}</td>
-                <td>{{txn.description}}</td>
-                <td ng-class="{'positive': txn.amount > 0, 'negative': txn.amount < 0}">
-                  {{txn.amount | currency:"₱"}}
-                </td>
-                <td>{{txn.balance | currency:"₱"}}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div ng-if="transactions.length > 0" class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="txn in transactions">
+              <td>{{txn.date | date:'MMM d, yyyy h:mm a'}}</td>
+              <td>{{txn.description}}</td>
+              <td ng-class="{'positive': txn.amount > 0, 'negative': txn.amount < 0}">
+                {{txn.amount | currency:"₱"}}
+              </td>
+              <td>{{txn.balance | currency:"₱"}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-        <div ng-if="transactions.length === 0 && searched">
-          <p>No transactions found for this account.</p>
-        </div>
-      </section>
-    </main>
-  </div>
+      <div ng-if="transactions.length === 0 && searched">
+        <p>No transactions found for this account.</p>
+      </div>
+    </section>
+  </main>
 
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
   <script src="/app/dashboard/admin/adminController.js"></script>

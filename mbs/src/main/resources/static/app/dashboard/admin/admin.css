@@ -1,256 +1,121 @@
-/* Reset and base */
-* {
-  box-sizing: border-box;
+/* General resets and layout */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  color: #000;
+}
+
+/* Topbar styles */
+.topbar {
+  background-color: #003366;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  justify-content: space-between;
+  border-bottom: 2px solid #ffd700;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Top navigation bar */
+.topnav ul {
+  display: flex;
+  list-style: none;
   margin: 0;
   padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  gap: 24px;
 }
 
-body {
-  background: #f0f4f8;
-  color: #003f7d;
-  font-size: 16px;
-  line-height: 1.5;
-  min-height: 100vh;
-}
-
-/* Top header bar */
-.topbar {
-  height: 64px;
-  background: linear-gradient(90deg, #003f7d 0%, #0056b3 100%);
-  color: #ffd700;
-  display: flex;
-  align-items: center;
-  padding: 0 30px;
-  font-size: 1.75rem;
-  font-weight: 700;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-  letter-spacing: 1px;
-  user-select: none;
-}
-
-/* Dashboard container */
-.dashboard-container {
-  display: flex;
-  min-height: calc(100vh - 64px);
-  background: #f0f4f8;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 240px;
-  background-color: #003f7d;
-  color: #fff;
-  padding-top: 24px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 3px 0 8px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar ul {
-  list-style: none;
-}
-
-.sidebar ul li {
-  padding: 18px 24px;
+.topnav ul li {
   cursor: pointer;
-  display: flex;
-  align-items: center;
+  padding: 12px 16px;
   font-weight: 600;
-  font-size: 1rem;
-  transition: background-color 0.25s ease, border-left-color 0.25s ease;
-  border-left: 5px solid transparent;
-  user-select: none;
+  color: #ffd700;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease-in-out;
 }
 
-.sidebar ul li i {
-  margin-right: 14px;
-  font-size: 1.3rem;
-  width: 20px;
-  text-align: center;
-  flex-shrink: 0;
+.topnav ul li.active,
+.topnav ul li:hover {
+  background-color: #00264d;
+  border-bottom: 3px solid #ffd700;
 }
 
-.sidebar ul li:hover,
-.sidebar ul li.active {
-  background-color: #0056b3;
-  border-left: 5px solid #ffd700;
-}
-
-.sidebar ul li.logout {
-  margin-top: auto;
-  border-top: 1px solid #002e5b;
+.topnav ul li.logout {
   color: #ff4d4d;
-  font-weight: 700;
-  font-size: 1.1rem;
 }
 
-.sidebar ul li.logout:hover {
+.topnav ul li.logout:hover {
   background-color: #b30000;
-  border-left-color: #ff4d4d;
+  border-bottom: 3px solid #ff4d4d;
 }
 
 /* Main content */
 .main-content {
-  flex: 1;
-  background-color: #fff;
-  padding: 40px 50px;
-  overflow-y: auto;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.02);
-  border-radius: 0 8px 8px 0;
-  display: flex;
-  flex-direction: column;
+  padding: 24px;
 }
 
-/* Headings */
-h2 {
-  margin-bottom: 28px;
-  color: #003f7d;
-  border-bottom: 3px solid #ffd700;
-  padding-bottom: 12px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-}
-
-/* Table styles */
+/* Tables */
 .table-wrapper {
   overflow-x: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgb(0 0 0 / 0.1);
-  border: 1px solid #e0e6f1;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  padding: 16px;
 }
 
 table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-size: 0.95rem;
-  color: #003f7d;
-  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
-thead {
-  background-color: #003f7d;
-  color: #ffd700;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-}
-
-th,
-td {
-  padding: 14px 18px;
-  border-bottom: 1px solid #e0e6f1;
+table th,
+table td {
+  border: 1px solid #ccc;
+  padding: 12px;
   text-align: left;
-  vertical-align: middle;
-  white-space: nowrap;
 }
 
-/* Rounded top corners on thead */
-thead tr th:first-child {
-  border-top-left-radius: 8px;
-}
-thead tr th:last-child {
-  border-top-right-radius: 8px;
+table th {
+  background-color: #003366;
+  color: white;
 }
 
-/* Rows hover effect */
-tbody tr:hover {
-  background-color: #f0f4f8;
-}
-
-/* Amount colors */
 .positive {
-  color: #28a745;
-  font-weight: 700;
+  color: green;
 }
 
 .negative {
-  color: #dc3545;
-  font-weight: 700;
+  color: red;
 }
 
-/* Transaction search input */
+/* Transaction search */
 .transaction-search {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   display: flex;
-  gap: 12px;
-  max-width: 480px;
+  gap: 8px;
 }
 
 .transaction-search input {
   flex: 1;
-  padding: 12px 18px;
-  border: 2px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 1rem;
-  color: #003f7d;
-  transition: border-color 0.3s ease;
-}
-
-.transaction-search input:focus {
-  outline: none;
-  border-color: #0056b3;
-  box-shadow: 0 0 6px #0056b3aa;
+  padding: 8px;
+  border: 1px solid #ccc;
+  box-shadow: none;
 }
 
 .transaction-search button {
-  background-color: #ffd700;
+  background-color: #003366;
+  color: #ffd700;
+  padding: 8px 16px;
   border: none;
-  color: #003f7d;
-  font-weight: 700;
-  padding: 12px 28px;
-  border-radius: 6px;
   cursor: pointer;
-  box-shadow: 0 2px 6px #ffd700aa;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  user-select: none;
 }
 
 .transaction-search button:hover {
-  background-color: #e6c200;
-  box-shadow: 0 3px 12px #e6c200cc;
-}
-
-/* Responsive for small screens */
-@media (max-width: 768px) {
-  .dashboard-container {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    flex-direction: row;
-    justify-content: space-around;
-    padding-top: 12px;
-  }
-
-  .sidebar ul {
-    display: flex;
-    width: 100%;
-    justify-content: space-around;
-  }
-
-  .sidebar ul li {
-    border-left: none;
-    border-bottom: 4px solid transparent;
-    font-size: 0.9rem;
-    padding: 12px 10px;
-  }
-
-  .sidebar ul li.active,
-  .sidebar ul li:hover {
-    border-bottom: 4px solid #ffd700;
-    background-color: transparent;
-  }
-
-  .main-content {
-    padding: 20px 15px;
-    border-radius: 0;
-  }
-
-  table {
-    min-width: unset;
-  }
+  background-color: #001f4d;
 }
