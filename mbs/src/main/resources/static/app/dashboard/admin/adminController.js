@@ -1,5 +1,5 @@
 angular.module('bankingApp')
-.controller('AdminController', function ($scope, $location, authService, bankService) {
+.controller('AdminController', function ($scope, $location, $window, authService, bankService) {
   const userId = localStorage.getItem('userId');
 
   // Initial view
