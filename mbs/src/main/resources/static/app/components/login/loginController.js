@@ -13,17 +13,24 @@ angular.module('bankingApp').controller('LoginController', ['$scope', '$http', '
 				headers: { 'Content-Type': 'application/json' },
 				withCredentials: true
 			}).then(function(response) {
-				const userData = {
-					token: response.data.token,
-					username: response.data.username,
-					role: response.data.role
-				};
+				//const userData = {
+				//	token: response.data.token,
+				//	username: response.data.username,
+				//	role: response.data.role
+				//};
 
-				authService.setUser(userData);
+				//authService.setUser(userData);
+				
+				console.log(response);
+				$window.localStorage.setItem('accessToken', response.data.accessToken);
+				$window.localStorage.setItem('refreshToken', response.data.refreshToken);
+				$window.localStorage.setItem('role', response.data.role);
+				$window.localStorage.setItem('userId', response.data.userId);
+				$window.localStorage.setItem('username', response.data.username);
 
-				if (userData.role === 'ADMIN') {
+				if (response.data.role === 'ADMIN') {
 					$window.location.href = '/dashboard/admin';
-				} else if (userData.role === 'CUSTOMER') {
+				} else if (response.data.role === 'CUSTOMER') {
 					$window.location.href = '/dashboard/customer';
 				} else {
 					$window.location.href = '/';
