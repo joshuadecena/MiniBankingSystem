@@ -1,4 +1,4 @@
-angular.module('bankingApp')
+angular.module('bankingApp', [])
   .factory('authService', ['$window', function($window) {
     var storage = $window.localStorage;
     var currentUserKey = 'currentUser';
