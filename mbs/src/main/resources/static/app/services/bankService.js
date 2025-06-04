@@ -2,8 +2,8 @@ angular.module('bankingApp')
 .service('bankService', function($http) {
 	
 	/***********	  ACCOUNTS		***********/
-	this.getAllAccounts = function() {
-		return $http.get('/api/accounts/all', {
+	this.getAllAccounts = function(page, size) {
+		return $http.get(`/api/accounts/all?page=${page}&size=${size}`, {
 			headers: {}
 		});
 	};
@@ -15,12 +15,6 @@ angular.module('bankingApp')
 	};
 	
 	/***********	TRANSACTIONS	***********/
-	
-	this.getAllTransactions = function() {
-		return $http.get('/api/transactions/all', {
-			headers: {}
-		});
-	};
 	
 	this.getAllTransactions = function(page, size) {
 		return $http.get(`/api/transactions/all?page=${page}&size=${size}&sort=timestamp,desc`, {
