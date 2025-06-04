@@ -40,6 +40,38 @@ angular.module('bankingApp')
 		});
 	}
 	
+	$scope.transferFunds = function() {
+		const sourceAccountId = $scope.account.accountId;
+		const destinationAccountId = $scope.transferData.destinationAccountId;
+		const amount = $scope.transferData.amount;
+		
+		if (!sourceAccountId || !destinationAccountId || !amount) {
+			alert("All fields are required.");
+			return;
+		}
+		
+		if (amount <= 0) {
+			alert("Amount must be greater than 0.");
+			return;
+		}
+
+		if (destinationAccountId === sourceAccountId) {
+			alert("Cannot transfer to the same account.");
+			return;
+		}
+		
+		bankService.createTransaction(sourceAccountId, destinationAccountId, amount).then(function(response) {
+			alert("Transfer successful.");
+			
+			$scope.transferData.destinationAccountId = '';
+			$scope.transferData.amount = null;
+			$scope.setPage('dashboard');
+		}).catch(function(error) {
+			console.error("Transfer failed:", error);
+			alert(error.data);
+		});
+	}
+	
 	if (userId) {
 		loadAccountDetails(userId);
 	}
