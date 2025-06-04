@@ -4,7 +4,6 @@ angular.module('bankingApp').controller('LoginController', ['$scope', '$http', '
       username: '',
       password: ''
     };
-
     $scope.error = null;
 
     $scope.login = function() {
@@ -20,10 +19,8 @@ angular.module('bankingApp').controller('LoginController', ['$scope', '$http', '
           role: response.data.role
         };
 
-        // Save user data in localStorage via authService
         authService.setUser(userData);
 
-        // Redirect user based on role
         if (userData.role === 'ADMIN') {
           $window.location.href = '/dashboard/admin';
         } else if (userData.role === 'CUSTOMER') {
