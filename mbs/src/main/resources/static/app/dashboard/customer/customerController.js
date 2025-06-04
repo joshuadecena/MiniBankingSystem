@@ -1,5 +1,5 @@
 angular.module('bankingApp')
-.controller('customerController', function($scope, $http, $location, bankService, authService) {
+.controller('customerController', function($scope, $http, $location, $window, bankService, authService) {
 	const userId = localStorage.getItem('userId');
 	
 	$scope.page = 'dashboard';
@@ -26,15 +26,24 @@ angular.module('bankingApp')
     
     $scope.logout = function() {
         authService.logout();
-        $location.path('/login');
+        $window.location.href = '/login';
     };
 	
 	function loadAccountDetails(userId) {
 		bankService.getAccountByUserId(userId).then(function(response) {
 			$scope.account = response.data;
+			$scope.account.accountId = $scope.account.accountId.toString().padStart(9, '0');
 		    return bankService.getAccountTransactions($scope.account.accountId);
 		}).then(function(response) {
-			$scope.transactions = response.data.content;
+			console.log(response);
+			$scope.transactions = response.data.content.map(function(transaction) {
+				return {
+					...transaction,
+					transactionId: transaction.transactionId.toString().padStart(12, '0'),
+					sourceAccountId: transaction.sourceAccountId.toString().padStart(9, '0'),
+					destinationAccountId: transaction.destinationAccountId.toString().padStart(9, '0')
+				};
+			});
 		}).catch(function(error) {
 			console.error('Error:', error);
 		});
