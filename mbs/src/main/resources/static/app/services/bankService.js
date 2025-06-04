@@ -1,24 +1,6 @@
 angular.module('bankingApp')
 .service('bankService', function($http) {
 	
-	/*
-	const API_BASE = '/api'; // Change this if your API base path is different
-
-	// Helper function to get auth headers
-	function getAuthHeaders() {
-		return {
-			Authorization: 'Bearer ' + authService.getToken()
-		};
-	}
-
-	// Get all customer accounts
-	this.getAllAccounts = function() {
-		return $http.get(`${API_BASE}/accounts`, {
-			headers: getAuthHeaders()
-		}).then(response => response.data);
-	};
-	*/
-	
 	/***********	  ACCOUNTS		***********/
 	this.getAllAccounts = function() {
 		return $http.get('/api/accounts/all', {

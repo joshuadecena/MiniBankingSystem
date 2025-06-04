@@ -43,7 +43,6 @@ angular.module('bankingApp')
 	
 	function getPaginatedAccountTransactions(accountId) {
 		bankService.getAccountTransactions(accountId, $scope.currentPage, $scope.pageSize).then(function(response) {
-			console.log(response.data);
 			$scope.transactions = response.data.content.map(function(transaction) {
 				return {
 					...transaction,
