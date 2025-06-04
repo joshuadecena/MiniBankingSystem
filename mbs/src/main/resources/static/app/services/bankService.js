@@ -1,5 +1,5 @@
 angular.module('bankingApp')
-.service('bankService', function($http, authService) {
+.service('bankService', function($http) {
 	
 	/*
 	const API_BASE = '/api'; // Change this if your API base path is different
@@ -60,24 +60,4 @@ angular.module('bankingApp')
 		});
 	}
 
-<<<<<<< Updated upstream
-  // Get all customer accounts
-  this.getAllAccounts = function() {
-    return $http.get(`${API_BASE}/accounts`, {
-      headers: getAuthHeaders()
-    }).then(response => response.data);
-  };
-
-  // Get transactions for a specific account ID
-  this.getTransactions = function(accountId) {
-    return $http.get(`${API_BASE}/accounts/${accountId}/transactions`, {
-      headers: getAuthHeaders()
-    }).then(response => response.data);
-  };
-
-  // Optional: Add more service methods here for future features
-
-=======
-	// Optional: Add more service methods here for future features
->>>>>>> Stashed changes
 });
