@@ -1,55 +1,41 @@
 angular.module('bankingApp')
-.controller('CustomerController', function($scope, $location, authService, bankService) {
-    $scope.view = 'balance';
-    $scope.account = {};
-    $scope.transactions = [];
-    $scope.transferData = {
-        toAccount: '',
-        amount: 0
-    };
-    
-    // Load account data
-    bankService.getAccount(authService.getCurrentUser().accountId)
-    .then(function(account) {
-        $scope.account = account;
-    });
-    
-    // Load transactions
-    bankService.getTransactions(authService.getCurrentUser().accountId)
-    .then(function(transactions) {
-        $scope.transactions = transactions;
-    });
-    
-    $scope.showBalance = function() {
-        $scope.view = 'balance';
-    };
-    
-    $scope.showTransfer = function() {
-        $scope.view = 'transfer';
-    };
-    
-    $scope.showHistory = function() {
-        $scope.view = 'history';
-    };
-    
-    $scope.transferFunds = function() {
-        bankService.transferFunds(
-            authService.getCurrentUser().accountId,
-            $scope.transferData.toAccount,
-            $scope.transferData.amount
-        ).then(function(response) {
-            $scope.transferMessage = 'Transfer successful!';
-            $scope.transferSuccess = true;
-            $scope.account.balance = response.newBalance;
-            $scope.transferData = { toAccount: '', amount: 0 };
-        }, function(error) {
-            $scope.transferMessage = 'Transfer failed: ' + error;
-            $scope.transferSuccess = false;
-        });
-    };
+.controller('customerController', function($scope, $http, $location, bankService, authService) {
+	const userId = localStorage.getItem('userId');
+	
+	$scope.page = 'dashboard';
+	$scope.account = {};
+	$scope.transactions = [];
+	
+	// Function to switch between different pages
+	$scope.setPage = function(page) {
+		$scope.page = page;
+		$scope.account = {};
+		$scope.transactions = [];
+		
+		if (page === 'dashboard') {
+			loadAccountDetails(localStorage.getItem('userId'));
+		} else if (page === 'transfer') {
+			// render transfer form
+		}
+	}
     
     $scope.logout = function() {
         authService.logout();
         $location.path('/login');
     };
+	
+	function loadAccountDetails(userId) {
+		bankService.getAccountByUserId(userId).then(function(response) {
+			$scope.account = response.data;
+		    return bankService.getAccountTransactions($scope.account.accountId);
+		}).then(function(response) {
+			$scope.transactions = response.data.content;
+		}).catch(function(error) {
+			console.error('Error:', error);
+		});
+	}
+	
+	if (userId) {
+		loadAccountDetails(userId);
+	}
 });
