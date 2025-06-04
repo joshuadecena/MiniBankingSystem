@@ -35,13 +35,13 @@ angular.module('bankingApp')
 	/***********	TRANSACTIONS	***********/
 	
 	this.getAllTransactions = function() {
-		return $http.get('/api/transactions/all', {
+		return $http.get('/api/transactions/all?sort=timestamp,desc', {
 			headers: {}
 		});
 	};
 	
 	this.getAccountTransactions = function(accountId) {
-		return $http.get(`/api/transactions/${accountId}`, {
+		return $http.get(`/api/transactions/${accountId}?sort=timestamp,desc`, {
 			headers: {}
 		});
 	}
