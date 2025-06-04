@@ -45,7 +45,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="account in paginatedAccounts()">
+            <tr ng-repeat="account in accounts">
               <td>{{formatAccountId(account.accountId)}}</td>
               <td>{{account.userId}}</td>
               <td>{{account.name}}</td>
@@ -60,56 +60,54 @@
 
       <!-- Pagination controls -->
       <center>
-      <div style="margin-top: 16px;">
-        <button ng-disabled="currentPage === 0" ng-click="prevPage()">Previous</button>
-        Page {{currentPage + 1}} of {{numPages()}}
-        <button ng-disabled="currentPage >= numPages() - 1" ng-click="nextPage()">Next</button>
-      </div>
+        <div style="margin-top: 16px;">
+          <button ng-disabled="currentPage === 0" ng-click="prevPage()">Previous</button>
+          Page {{currentPage + 1}} of {{totalPages}}
+          <button ng-disabled="currentPage >= totalPages - 1" ng-click="nextPage()">Next</button>
+        </div>
       </center>
     </section>
 
-	<!-- Transactions View -->
-	<section ng-if="view ==='transactions'">
-		<!--<li ng-class="{active: view==='transactions'}">-->
+    <!-- Transactions View -->
+    <section ng-if="view === 'transactions'">
+      <h2>Transactions</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Source Account</th>
+              <th>Destination Account</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="txn in transactions">
+              <td>{{txn.timestamp | date:'MMM d, yyyy | h:mm a'}}</td>
+              <td>{{formatSourceAccountId(txn.sourceAccountId)}}</td>
+              <td>{{formatDestinationAccountId(txn.destinationAccountId)}}</td>
+              <td ng-class="{'positive': txn.amount > 0, 'negative': txn.amount < 0}">
+                {{txn.amount | currency:"₱"}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-	  <h2>Transactions</h2>
+      <div ng-if="transactions.length === 0">
+        <p>No transactions found.</p>
+      </div>
 
-	  <div class="table-wrapper">
-	    <table>
-	      <thead>
-	        <tr>
-	          <th>Date</th>
-	          <th>Source Account</th>
-	          <th>Destination Account</th>
-	          <th>Amount</th>
-	        </tr>
-	      </thead>
-	      <tbody>
-	       <!---- <tr ng-repeat="txn in transactions"> -->
-			  <tr ng-repeat="txn in paginatedTransactions()">
-	          <td>{{txn.timestamp | date:'MMM d, yyyy | h:mm a'}}</td>
-	          <td>{{formatSourceAccountId(txn.sourceAccountId)}}</td>
-	          <td>{{formatDestinationAccountId(txn.destinationAccountId)}}</td>
-	          <td ng-class="{'positive': txn.amount > 0, 'negative': txn.amount < 0}">
-	            {{txn.amount | currency:"₱"}}
-	          </td>
-	        </tr>
-	      </tbody>
-	    </table>
-	  </div>
-
-	  <div ng-if="transactions.length === 0">
-	    <p>No transactions found.</p>
-	  </div>
-	  <center>
-	  <div style="margin-top: 16px;">
-	    <button ng-disabled="currentPage === 0" ng-click="prevPage()">Previous</button>
-	    Page {{currentPage + 1}} of {{numPages()}}
-	    <button ng-disabled="currentPage >= numPages() - 1" ng-click="nextPage()">Next</button>
-	  </div>
-	  </center>
-	</section>
-    </main>
+      <!-- Pagination controls -->
+      <center>
+        <div style="margin-top: 16px;">
+          <button ng-disabled="currentPage === 0" ng-click="prevPage()">Previous</button>
+          Page {{currentPage + 1}} of {{totalPages}}
+          <button ng-disabled="currentPage >= totalPages - 1" ng-click="nextPage()">Next</button>
+        </div>
+      </center>
+    </section>
+  </main>
 
   <!-- AngularJS Modules -->
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
@@ -122,6 +120,7 @@
   <script src="/app/services/authService.js"></script>
   <script src="/app/services/bankService.js"></script>
 
+  <!-- Controller -->
   <script src="/app/dashboard/admin/adminController.js"></script>
 </body>
 </html>
