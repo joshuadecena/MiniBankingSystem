@@ -29,6 +29,11 @@ angular.module('bankingApp', [])
 
       logout: function() {
         storage.removeItem(currentUserKey);
+		storage.removeItem('accessToken');
+		storage.removeItem('refreshToken');
+		storage.removeItem('role');
+		storage.removeItem('userId');
+		storage.removeItem('username');
       }
     };
   }]);

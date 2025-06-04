@@ -40,8 +40,14 @@ angular.module('bankingApp')
 		});
 	};
 	
-	this.getAccountTransactions = function(accountId) {
-		return $http.get(`/api/transactions/${accountId}`, {
+	this.getAllTransactions = function(page, size) {
+		return $http.get(`/api/transactions/all?page=${page}&size=${size}&sort=timestamp,desc`, {
+			headers: {}
+		});
+	};
+	
+	this.getAccountTransactions = function(accountId, page, size) {
+		return $http.get(`/api/transactions/${accountId}?page=${page}&size=${size}&sort=timestamp,desc`, {
 			headers: {}
 		});
 	}
