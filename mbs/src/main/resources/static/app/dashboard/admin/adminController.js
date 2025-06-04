@@ -94,8 +94,8 @@ angular.module('bankingApp')
   };
 
   $scope.logout = function() {
-    authService.logout();
-    $location.path('/login');
+      authService.logout();
+      $window.location.href = '/login';
   };
 
   // Initial load
