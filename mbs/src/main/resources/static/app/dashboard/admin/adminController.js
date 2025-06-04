@@ -1,11 +1,15 @@
 angular.module('bankingApp')
 .controller('AdminController', function ($scope, $location, authService, bankService) {
-  $scope.view = 'accounts';          // current view ('accounts' or 'transactions')
+  const userId = localStorage.getItem('userId'); // Get user ID from local storage
+
+  // Initial view (set only once!)
+  $scope.view = 'accounts'; // or 'transactions' if you want that to be the default
+
   $scope.accounts = [];              // list of all accounts
-  $scope.transactions = [];          // list of transactions for selected account
-  $scope.selectedAccount = null;     // currently selected account for transactions view
-  $scope.searchAccountInput = '';    // input box for searching transactions by account number or user id
-  $scope.searched = false;           // flag indicating if a search was performed
+  $scope.transactions = [];          // list of transactions
+  $scope.selectedAccount = null;     // currently selected account (if filtering)
+  $scope.searchAccountInput = '';    // input for searching
+  $scope.searched = false;           // flag for whether a search was done
 
   // Pagination setup
   $scope.currentPage = 0;
@@ -14,6 +18,29 @@ angular.module('bankingApp')
   $scope.paginatedAccounts = function () {
     const start = $scope.currentPage * $scope.pageSize;
     return $scope.accounts.slice(start, start + $scope.pageSize);
+  };
+
+  $scope.numPages = function () {
+    return Math.ceil($scope.accounts.length / $scope.pageSize);
+  };
+
+  $scope.prevPage = function () {
+	$scope.currentPage--;
+      getPaginatedAccountTransactions($scope.account.accountId);
+    }
+  };
+
+  $scope.nextPage = function () {
+      $scope.currentPage++
+	  getPaginatedAccountTransactions($scope.account.accountId);
+
+    }
+  };
+  
+  // for paginating transactions
+  $scope.paginatedTransactions = function () {
+    const start = $scope.currentPage * $scope.pageSize;
+    return $scope.transactions.slice(start, start + $scope.pageSize);
   };
 
   $scope.numPages = function () {
@@ -32,66 +59,82 @@ angular.module('bankingApp')
     }
   };
 
-  // Load all accounts on controller init
-  bankService.getAllAccounts()
-    .then(function(accounts) {
-      $scope.accounts = accounts;
+  $scope.formatAccountId = function(accountId) {
+    return String(accountId).padStart(9, '0');
+  };
+  
+  $scope.formatDestinationAccountId = function(destinationAccountId) {
+    return String(destinationAccountId).padStart(9, '0');
+  };
+  
+  $scope.formatSourceAccountId = function(sourceAccountId) {
+    return String(sourceAccountId).padStart(9, '0');
+  };
+
+  // Load all accounts on init
+  bankService.getAllAccounts($scope.currentPage, $scope.pageSize)
+    .then(function(response) {
+      console.log("Accounts loaded:", response.data.content);
+      $scope.accounts = response.data.content;
     })
     .catch(function(err) {
       alert('Failed to load accounts.');
       console.error(err);
     });
 
-  // Switch between 'accounts' and 'transactions' views
-  $scope.setView = function(view) {
-    $scope.view = view;
+  // Load all transactions on init
+  bankService.getAllTransactions($scope.currentPage, $scope.pageSize)
+    .then(function(response) {
+      console.log("Transactions loaded:", response.data.content);
+      $scope.transactions = response.data.content;
+    })
+    .catch(function(err) {
+      alert('Failed to load transactions.');
+      console.error(err);
+    });
+	
+	function getPaginatedAccountTransactions(accountId) {
+		bankService.getAllTransactions($scope.currentPage, $scope.pageSize)
+            .then(function(response) {
+                $scope.transactions = response.data.content.map(function(transaction) {
+					                    return {
+                        ...transaction,
+						transactionId: transaction.transactionId.toString().padStart(9, '0'),
+                        sourceAccountId: transaction.sourceAccountId.toString().padStart(9, '0'),
+                        destinationAccountId:transaction.destinationAccountId.toString().padStart(9, '0'),
+                    };
+                });
+				$scope.totalPages = response.data.content;
+
+            }).catch(function(err) {
+                console.error(err);
+            });
+	}
+
+  // Switch views and reset fields
+  $scope.setView = function(viewName) {
+    $scope.view = viewName;
     $scope.transactions = [];
     $scope.selectedAccount = null;
     $scope.searchAccountInput = '';
     $scope.searched = false;
-    $scope.currentPage = 0; // Reset pagination when switching views
-  };
-
-  // Load transactions by account number or user ID
-  $scope.loadTransactions = function() {
-    const query = $scope.searchAccountInput.trim();
-    if (!query) {
-      alert('Please enter an Account Number or User ID.');
-      return;
-    }
-
-    bankService.getTransactions(query)
-      .then(function(transactions) {
-        $scope.transactions = transactions || [];
-        $scope.searched = true;
-
-        // Find selected account from the accounts list
-        $scope.selectedAccount = $scope.accounts.find(acc =>
-          acc.accountId === query || acc.userId === query
-        ) || null;
-
-        // Switch to transactions view if not already there
-        if ($scope.view !== 'transactions') {
-          $scope.view = 'transactions';
-        }
-      })
-      .catch(function(err) {
-        alert('Failed to load transactions. Please check the Account Number or User ID.');
-        $scope.transactions = [];
-        $scope.selectedAccount = null;
-        $scope.searched = true;
-        console.error(err);
-      });
-  };
-
-  // Trigger search on Enter key press
-  $scope.checkEnter = function(event) {
-    if (event.keyCode === 13) {
-      $scope.loadTransactions();
+    $scope.currentPage = 0;
+    
+    // Optional: reload transactions if switching to 'transactions'
+    if (viewName === 'transactions') {
+      bankService.getAllTransactions()
+        .then(function(response) {
+          console.log("Transactions loaded (from setView):", response.data.content);
+          $scope.transactions = response.data.content;
+        })
+        .catch(function(err) {
+          alert('Failed to load transactions.');
+          console.error(err);
+        });
     }
   };
 
-  // Logout and redirect to login page
+  // Logout
   $scope.logout = function() {
     authService.logout();
     $location.path('/login');

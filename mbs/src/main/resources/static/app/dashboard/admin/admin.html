@@ -36,21 +36,21 @@
           <thead>
             <tr>
               <th>Account No.</th>
+              <th>User ID</th>
               <th>Name</th>
               <th>Email</th>
               <th>Address</th>
-              <th>User ID</th>
               <th>Date of Birth</th>
               <th>Balance</th>
             </tr>
           </thead>
           <tbody>
             <tr ng-repeat="account in paginatedAccounts()">
-              <td>{{account.accountId}}</td>
+              <td>{{formatAccountId(account.accountId)}}</td>
+              <td>{{account.userId}}</td>
               <td>{{account.name}}</td>
               <td>{{account.email}}</td>
               <td>{{account.address}}</td>
-              <td>{{account.userId}}</td>
               <td>{{account.dateOfBirth | date:'MMM d, yyyy'}}</td>
               <td>{{account.balance | currency:"₱"}}</td>
             </tr>
@@ -59,55 +59,69 @@
       </div>
 
       <!-- Pagination controls -->
+      <center>
       <div style="margin-top: 16px;">
         <button ng-disabled="currentPage === 0" ng-click="prevPage()">Previous</button>
         Page {{currentPage + 1}} of {{numPages()}}
         <button ng-disabled="currentPage >= numPages() - 1" ng-click="nextPage()">Next</button>
       </div>
+      </center>
     </section>
 
-    <!-- Transactions View -->
-    <section ng-if="view === 'transactions'">
-      <h2>Transactions</h2>
-      <div class="transaction-search">
-        <input
-          type="text"
-          placeholder="Enter Account Number or User ID"
-          ng-model="searchAccountInput"
-          ng-keypress="checkEnter($event)" />
-        <button ng-click="loadTransactions()">Search</button>
-      </div>
+	<!-- Transactions View -->
+	<section ng-if="view ==='transactions'">
+		<!--<li ng-class="{active: view==='transactions'}">-->
 
-      <div ng-if="transactions.length > 0" class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Description</th>
-              <th>Amount</th>
-              <th>Balance</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-repeat="txn in transactions">
-              <td>{{txn.date | date:'MMM d, yyyy h:mm a'}}</td>
-              <td>{{txn.description}}</td>
-              <td ng-class="{'positive': txn.amount > 0, 'negative': txn.amount < 0}">
-                {{txn.amount | currency:"₱"}}
-              </td>
-              <td>{{txn.balance | currency:"₱"}}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+	  <h2>Transactions</h2>
 
-      <div ng-if="transactions.length === 0 && searched">
-        <p>No transactions found for this account.</p>
-      </div>
-    </section>
-  </main>
+	  <div class="table-wrapper">
+	    <table>
+	      <thead>
+	        <tr>
+	          <th>Date</th>
+	          <th>Source Account</th>
+	          <th>Destination Account</th>
+	          <th>Amount</th>
+	        </tr>
+	      </thead>
+	      <tbody>
+	       <!---- <tr ng-repeat="txn in transactions"> -->
+			  <tr ng-repeat="txn in paginatedTransactions()">
+	          <td>{{txn.timestamp | date:'MMM d, yyyy | h:mm a'}}</td>
+	          <td>{{formatSourceAccountId(txn.sourceAccountId)}}</td>
+	          <td>{{formatDestinationAccountId(txn.destinationAccountId)}}</td>
+	          <td ng-class="{'positive': txn.amount > 0, 'negative': txn.amount < 0}">
+	            {{txn.amount | currency:"₱"}}
+	          </td>
+	        </tr>
+	      </tbody>
+	    </table>
+	  </div>
 
+	  <div ng-if="transactions.length === 0">
+	    <p>No transactions found.</p>
+	  </div>
+	  <center>
+	  <div style="margin-top: 16px;">
+	    <button ng-disabled="currentPage === 0" ng-click="prevPage()">Previous</button>
+	    Page {{currentPage + 1}} of {{numPages()}}
+	    <button ng-disabled="currentPage >= numPages() - 1" ng-click="nextPage()">Next</button>
+	  </div>
+	  </center>
+	</section>
+    </main>
+
+  <!-- AngularJS Modules -->
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+
+  <!-- Main Angular App -->
+  <script src="/app/app.js"></script>
+
+  <!-- Services -->
+  <script src="/app/services/authService.js"></script>
+  <script src="/app/services/bankService.js"></script>
+
   <script src="/app/dashboard/admin/adminController.js"></script>
 </body>
 </html>
