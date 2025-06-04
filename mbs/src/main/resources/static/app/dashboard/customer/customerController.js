@@ -6,16 +6,21 @@ angular.module('bankingApp')
 	$scope.account = {};
 	$scope.transactions = [];
 	
+	$scope.transferData = {
+		destinationAccountId: '',
+		amount: null
+	};
+	
 	// Function to switch between different pages
 	$scope.setPage = function(page) {
 		$scope.page = page;
-		$scope.account = {};
-		$scope.transactions = [];
 		
 		if (page === 'dashboard') {
 			loadAccountDetails(localStorage.getItem('userId'));
 		} else if (page === 'transfer') {
-			// render transfer form
+			$scope.transferData.destinationAccountId = '';
+			$scope.transferData.amount = null;
+			$scope.transactions = [];
 		}
 	}
     

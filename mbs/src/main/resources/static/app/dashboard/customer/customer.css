@@ -4,3 +4,61 @@ body {
   background-color: #ffffff;
   color: #000;
 }
+
+/* TRANSFER FORM */
+.transfer-card {
+	max-width: 25%;
+	margin: 3% auto;
+	padding: 20px;
+	background-color: #fff;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+	text-align: center;
+}
+
+.transfer-card h2 {
+	margin-bottom: 10px;
+}
+
+.form-group {
+	margin: 8% 0;
+	text-align: left;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"] {
+	width: 100%;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+.currency-input {
+	display: flex;
+	align-items: center;
+}
+
+.currency-input span {
+	margin-right: 5px;
+	font-weight: bold;
+}
+
+.transfer-button {
+	background-color: #003366;
+	color: white;
+	border: none;
+	padding: 10px 20px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 16px;
+}
+
+.transfer-button:hover {
+	background-color: #2980b9;
+}

@@ -59,9 +59,36 @@
 			</div> <!-- TRANSACTION HISTORY END -->
 		</div>
 		
-		<div ng-if="page === transfer">
-			<!-- PAGE FOR TRANSFER FORM -->
-		</div>
+		<div ng-if="page === 'transfer'"> <!-- TRANSFER FORM START -->
+			<div class="transfer-card">
+				<h2>Transfer Funds to Other Account</h2>
+				<hr />
+				
+				<form ng-submit="transferFunds()">
+					<div class="form-group">
+						<label>Transfer from (Account No.)</label>
+						<input type="text" ng-model="account.accountId" disabled />
+					</div>
+
+					<div class="form-group">
+						<label>Transfer to (Account No.)</label>
+						<input type="number" ng-model="transferData.destinationAccountId" required />
+					</div>
+
+					<div class="form-group">
+						<label>Amount</label>
+						<div class="currency-input">
+							<span>₱</span>
+							<input type="number" ng-model="transferData.amount" min="1" required />
+						</div>
+					</div>
+
+					<hr />
+
+					<button type="submit" class="transfer-button">Transfer</button>
+				</form>
+			</div>
+		</div> <!-- TRANSFER FORM END -->
 	</main>
 	
 	<!-- AngularJS Modules -->
