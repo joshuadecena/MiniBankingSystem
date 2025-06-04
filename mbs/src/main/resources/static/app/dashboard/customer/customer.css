@@ -5,6 +5,11 @@ body {
 	color: #000;
 }
 
+
+* {
+	box-sizing: border-box;
+}
+
 .main-content {
 	padding: 24px;
 }
@@ -91,6 +96,7 @@ table th {
 	background-color: #003366;
 	color: white;
 	border: none;
+	margin-top: 5%;
 	padding: 10px 20px;
 	border-radius: 4px;
 	cursor: pointer;

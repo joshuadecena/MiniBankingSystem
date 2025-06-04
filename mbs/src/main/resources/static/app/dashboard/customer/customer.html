@@ -58,6 +58,16 @@
 					<p>No transactions to show.</p>
 				</div>
 			</div> <!-- TRANSACTION HISTORY END -->
+			
+			<div> <!-- TRANSACTION HISTORY PAGINATION CONTROLS START -->
+				<center>
+					<div style="margin-top: 16px;">
+						<button ng-disabled="currentPage === 0" ng-click="prevPage()">Previous</button>
+						Page {{ currentPage + 1 }} of {{ totalPages }}
+						<button ng-disabled="currentPage + 1 >= totalPages" ng-click="nextPage()">Next</button>
+					</div>
+				</center>
+			</div> <!-- TRANSACTION HISTORY PAGINATION CONTROLS END -->
 		</div>
 		
 		<div ng-if="page === 'transfer'"> <!-- TRANSFER FORM START -->

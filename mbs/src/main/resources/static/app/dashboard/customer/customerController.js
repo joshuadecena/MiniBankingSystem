@@ -2,6 +2,10 @@ angular.module('bankingApp')
 .controller('customerController', function($scope, $http, $location, $window, bankService, authService) {
 	const userId = localStorage.getItem('userId');
 	
+	$scope.currentPage = 0;
+	$scope.pageSize = 6;
+	$scope.totalPages = 0;
+	
 	$scope.page = 'dashboard';
 	$scope.account = {};
 	$scope.transactions = [];
@@ -33,24 +37,40 @@ angular.module('bankingApp')
 		bankService.getAccountByUserId(userId).then(function(response) {
 			$scope.account = response.data;
 			$scope.account.accountId = $scope.account.accountId.toString().padStart(9, '0');
-		    return bankService.getAccountTransactions($scope.account.accountId);
-		}).then(function(response) {
-			console.log(response);
+			getPaginatedAccountTransactions($scope.account.accountId);
+		});
+	}
+	
+	function getPaginatedAccountTransactions(accountId) {
+		bankService.getAccountTransactions(accountId, $scope.currentPage, $scope.pageSize).then(function(response) {
+			console.log(response.data);
 			$scope.transactions = response.data.content.map(function(transaction) {
 				return {
 					...transaction,
-					transactionId: transaction.transactionId.toString().padStart(12, '0'),
+					transactionId: transaction.transactionId.toString().padStart(9, '0'),
 					sourceAccountId: transaction.sourceAccountId.toString().padStart(9, '0'),
 					destinationAccountId: transaction.destinationAccountId.toString().padStart(9, '0')
 				};
 			});
+
+			$scope.totalPages = response.data.totalPages;
 		}).catch(function(error) {
-			console.error('Error:', error);
+			console.error('Error: ', error);
 		});
 	}
 	
+	$scope.prevPage = function() {
+		$scope.currentPage--;
+		getPaginatedAccountTransactions($scope.account.accountId );
+	}
+	
+	$scope.nextPage = function() {
+		$scope.currentPage++;
+		getPaginatedAccountTransactions($scope.account.accountId );
+	}
+	
 	$scope.transferFunds = function() {
-		const sourceAccountId = $scope.account.accountId;
+		const sourceAccountId = Number($scope.account.accountId);
 		const destinationAccountId = $scope.transferData.destinationAccountId;
 		const amount = $scope.transferData.amount;
 		
@@ -63,7 +83,7 @@ angular.module('bankingApp')
 			alert("Amount must be greater than 0.");
 			return;
 		}
-
+		
 		if (destinationAccountId === sourceAccountId) {
 			alert("Cannot transfer to the same account.");
 			return;
