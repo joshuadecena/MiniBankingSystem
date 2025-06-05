@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="bankingApp" ng-controller="customerController">
+<head>
+	<title>Minibank Customer Dashboard</title>
+	
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	
+	<link rel="stylesheet" href="/app/components/navbar/navbar.css" />
+	<link rel="stylesheet" href="/app/dashboard/customer/customer.css" />
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+</head>
+
+<body>
+	<!-- Top header with navbar links -->
+	<header class="topbar">
+		<div class="logo">Minibank</div>
+		<nav class="topnav">
+			<ul>
+				<li ng-class="{active: page ==='dashboard'}" ng-click="setPage('dashboard')"><i class="fa fa-university"></i> Dashboard</li>
+				<li ng-class="{active: page ==='transfer'}" ng-click="setPage('transfer')"><i class="fa fa-exchange"></i> Transfer</li>
+				<li class="logout" ng-click="logout()"><i class="fa fa-sign-out"></i> Logout</li>
+			</ul>
+		</nav>
+	</header>
+
+	<!-- Main content -->
+	<main class="main-content">
+		<div ng-if="page === 'dashboard'">
+			<h2>Balance: {{ account.balance | currency:"₱" }}</h2>
+			<h4>Account No.: {{ account.accountId }}</h4>
+			
+			<hr>
+			
+			<div> <!-- TRANSACTION HISTORY START -->
+				<h2>Transaction History</h2>
+				<div class="table-wrapper" ng-if="transactions.length > 0">
+					<table>
+						<tr>
+							<th>Transaction ID</th>
+							<th>Transfer From</th>
+							<th>Transfer To</th>
+							<th>Amount</th>
+							<th>Timestamp</th>
+						</tr>
+						<tr ng-repeat="transaction in transactions">
+							<td>{{ transaction.transactionId }}</td>
+							<td>{{ transaction.sourceAccountId }}</td>
+							<td>{{ transaction.destinationAccountId }}</td>
+							<td>{{ transaction.amount | currency:"₱ " }}</td>
+							<td>{{ transaction.timestamp | date:'MMM d, yyyy - h:mm a' }}</td>
+						</tr>
+					</table>
+				</div>
+				
+				<div ng-if="transactions.length === 0">
+					<p>No transactions to show.</p>
+				</div>
+			</div> <!-- TRANSACTION HISTORY END -->
+			
+			<div> <!-- TRANSACTION HISTORY PAGINATION CONTROLS START -->
+				<center>
+					<div style="margin-top: 16px;">
+						<button ng-disabled="currentPage === 0" ng-click="prevPage()">Previous</button>
+						Page {{ currentPage + 1 }} of {{ totalPages }}
+						<button ng-disabled="currentPage + 1 >= totalPages" ng-click="nextPage()">Next</button>
+					</div>
+				</center>
+			</div> <!-- TRANSACTION HISTORY PAGINATION CONTROLS END -->
+		</div>
+		
+		<div ng-if="page === 'transfer'"> <!-- TRANSFER FORM START -->
+			<div class="transfer-card">
+				<h2>Transfer Funds to Other Account</h2>
+				<hr />
+				
+				<form ng-submit="transferFunds()">
+					<div class="form-group">
+						<label>Transfer from (Account No.)</label>
+						<input type="text" ng-model="account.accountId" disabled />
+					</div>
+
+					<div class="form-group">
+						<label>Transfer to (Account No.)</label>
+						<input type="number" min="1" ng-model="transferData.destinationAccountId" required />
+					</div>
+
+					<div class="form-group">
+						<label>Amount</label>
+						<div class="currency-input">
+							<span>₱</span>
+							<input type="number" ng-model="transferData.amount" min="1" required />
+						</div>
+					</div>
+
+					<hr />
+
+					<button type="submit" class="transfer-button">Transfer</button>
+				</form>
+			</div>
+		</div> <!-- TRANSFER FORM END -->
+	</main>
+	
+	<!-- AngularJS Modules -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+	
+	<!-- Main Angular App -->
+	<script src="/app/app.js"></script>
+	
+	<!-- Services -->
+	<script src="/app/services/authService.js"></script>
+	<script src="/app/services/bankService.js"></script>
+	
+	<!-- Controllers -->
+	<script src="/app/dashboard/customer/customerController.js"></script>
+</body>
+
+</html>

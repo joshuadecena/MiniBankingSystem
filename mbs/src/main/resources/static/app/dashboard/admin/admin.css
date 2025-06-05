@@ -1,0 +1,95 @@
+/* General resets and layout */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  color: #000;
+}
+
+/* Topbar styles */
+.topbar {
+  background-color: #003366;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  justify-content: space-between;
+  border-bottom: 2px solid #ffd700;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* Top navigation bar */
+.topnav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 24px;
+}
+
+.topnav ul li {
+  cursor: pointer;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: #ffd700;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.topnav ul li.active,
+.topnav ul li:hover {
+  background-color: #00264d;
+  border-bottom: 3px solid #ffd700;
+}
+
+.topnav ul li.logout {
+  color: #ff4d4d;
+}
+
+.topnav ul li.logout:hover {
+  background-color: #b30000;
+  border-bottom: 3px solid #ff4d4d;
+}
+
+/* Main content */
+.main-content {
+  padding: 24px;
+}
+
+/* Tables */
+.table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  padding: 16px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+table th,
+table td {
+  border: 1px solid #ccc;
+  padding: 12px;
+  text-align: left;
+}
+
+table th {
+  background-color: #003366;
+  color: white;
+}
+
+.positive {
+  color: green;
+}
+
+.negative {
+  color: red;
+}
