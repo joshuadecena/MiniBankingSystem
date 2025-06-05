@@ -70,11 +70,21 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        if (token == null || token.isEmpty()) {
+            return false;
+        }
+        
+        try {
+            final String username = extractUsername(token);
+            return (username.equals(userDetails.getUsername())) && 
+                   !isTokenExpired(token) &&
+                   isTokenStructureValid(token);
+        } catch (Exception e) {
+            return false;
+        }
     }
     
-    private Date extractExpiration(String token) {
+    Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
@@ -92,5 +102,31 @@ public class JwtService {
 
     private SecretKey getSignInKey() {
     	return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
+    
+    public boolean isTokenAboutToExpire(String token, long thresholdMillis) {
+        try {
+            Date expiration = extractExpiration(token);
+            long timeUntilExpiration = expiration.getTime() - System.currentTimeMillis();
+            return timeUntilExpiration <= thresholdMillis;
+        } catch (Exception e) {
+            return true;
+        }
+    }
+    
+    private boolean isTokenStructureValid(String token) {
+        try {
+            // Basic JWT structure validation
+            String[] parts = token.split("\\.");
+            if (parts.length != 3) {
+                return false;
+            }
+            
+            // Verify we can parse the claims
+            extractAllClaims(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
