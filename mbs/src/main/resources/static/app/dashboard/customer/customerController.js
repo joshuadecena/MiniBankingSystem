@@ -1,6 +1,7 @@
 angular.module('bankingApp')
 .controller('customerController', function($scope, $http, $location, $window, bankService, authService) {
-	const userId = localStorage.getItem('userId');
+	const user = JSON.parse(localStorage.getItem('currentUser'));
+	const userId = user.userId;
 	
 	$scope.currentPage = 0;
 	$scope.pageSize = 6;

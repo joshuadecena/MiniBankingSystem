@@ -10,6 +10,7 @@ import com.capstone.mbs.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +25,13 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
+
+    @Value("${application.security.jwt.refresh-token.expiration}")
+    private long refreshExpiration;
+
+    public long getRefreshExpiration() {
+        return refreshExpiration;
+    }
 
     public AuthResponseDTO authenticate(LoginRequestDTO request) {
         authenticationManager.authenticate(
@@ -59,6 +67,6 @@ public class AuthenticationService {
                 return UserDTOMapper.toAuthResponseDTO(newAccessToken, newRefreshToken, user);
             }
         }
-        throw new InvalidRefreshTokenException ("Invalid refresh token");
+        throw new InvalidRefreshTokenException("Invalid refresh token");
     }
 }
