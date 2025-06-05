@@ -1,4 +1,4 @@
-angular.module('bankingApp', [])
+angular.module('bankingApp')
 .factory('authService', ['$window', '$http', '$q', '$timeout', '$rootScope', 
 function($window, $http, $q, $timeout, $rootScope) {
   let storage = $window.localStorage;
@@ -10,17 +10,13 @@ function($window, $http, $q, $timeout, $rootScope) {
   return {
     login: function(credentials) {
       return $http.post('/api/auth/login', credentials, {
-        withCredentials: true // Important for HttpOnly cookies
+        withCredentials: true
       }).then(function(response) {
-        console.log('Login response:', response.data);
         if (!response.data || !response.data.accessToken) {
           return $q.reject('Invalid response from server');
         }
-        
-		console.log('Token received:', response.data.accessToken);
 		
         storage.setItem(accessTokenKey, response.data.accessToken);
-		console.log('Token stored:', storage.getItem(accessTokenKey));
         
         let user = {
           username: credentials.username,
@@ -30,8 +26,10 @@ function($window, $http, $q, $timeout, $rootScope) {
         };
         storage.setItem(currentUserKey, JSON.stringify(user));
         
+		this.startTokenRefreshTimer();
+		
         return user;
-      });
+      }.bind(this));
     },
 
     logout: function() {
@@ -61,17 +59,14 @@ function($window, $http, $q, $timeout, $rootScope) {
 	      throw new Error('Invalid token refresh response');
 	    }
 
-	    // Update access token
 	    storage.setItem(accessTokenKey, response.data.accessToken);
 
-	    // Update user info
 	    let user = this.getUser();
 	    if (user) {
 	      user.token = response.data.accessToken;
 	      storage.setItem(currentUserKey, JSON.stringify(user));
 	    }
 
-	    // Emit event to restart timer
 	    $rootScope.$emit('tokenRefreshed');
 	    
 	    return response.data.accessToken;
@@ -113,9 +108,7 @@ function($window, $http, $q, $timeout, $rootScope) {
 	    const expiration = payload.exp * 1000;
 	    const now = Date.now();
 	    
-	    // Token is expired if current time is past expiration
-	    // Or if it will expire within the next 5 minutes (300000 ms)
-	    return now > expiration || (expiration - now) < 300000;
+	    return now > expiration || (expiration - now) < 60000;
 	  } catch (e) {
 	    console.error('Error parsing token:', e);
 	    return true;
@@ -127,7 +120,7 @@ function($window, $http, $q, $timeout, $rootScope) {
 	  
 	  try {
 	    const payload = JSON.parse(atob(token.split('.')[1]));
-	    return payload.exp * 1000; // Convert to milliseconds
+	    return payload.exp * 1000;
 	  } catch (e) {
 	    console.error('Error parsing token expiration:', e);
 	    return null;
@@ -145,7 +138,7 @@ function($window, $http, $q, $timeout, $rootScope) {
 	  const now = Date.now();
 	  const timeUntilExpiration = expiration - now;
 
-	  if (timeUntilExpiration < 60000) {
+	  if (timeUntilExpiration < 5000) {
 	    this.refreshToken();
 	    return;
 	  }

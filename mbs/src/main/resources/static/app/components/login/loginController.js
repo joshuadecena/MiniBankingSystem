@@ -1,6 +1,6 @@
 angular.module('bankingApp')
-.controller('LoginController', ['$scope', 'authService', '$window', '$location',
-function($scope, authService, $window, $location) {
+.controller('LoginController', ['$scope', 'authService', '$window', '$location', '$rootScope',
+function($scope, authService, $window, $location, $rootScope) {
   $scope.credentials = {
     username: '',
     password: ''
@@ -21,7 +21,7 @@ function($scope, authService, $window, $location) {
       .then(function(user) {
         if (user && user.role) {
           // Initialize token refresh after successful login
-          authService.initializeTokenRefresh();
+		  $rootScope.$emit('userLoggedIn');
           $window.location.href = ('/dashboard/' + user.role.toLowerCase());
         } else {
 			alert('Invalid user data received.');

@@ -2,7 +2,7 @@ angular.module('bankingApp', ['ngRoute'])
 .config(function($routeProvider) {
     $routeProvider
     .when('/login', {
-        templateUrl: 'static/app/components/login/login.html',
+        templateUrl: '/app/components/login/login.html',
         controller: 'LoginController'
     })
     .when('/dashboard', {
@@ -13,12 +13,12 @@ angular.module('bankingApp', ['ngRoute'])
             var role = localStorage.getItem('userRole'); // example source of role
             
             if (role === 'admin') {
-                return 'static/app/components/dashboard/admin/admin.html';
+                return '/app/components/dashboard/admin/admin.html';
             } else if (role === 'customer') {
-                return 'static/app/components/dashboard/customer/customer.html';
+                return '/app/components/dashboard/customer/customer.html';
             } else {
                 // fallback - redirect to login or a default
-                return 'static/app/components/login/login.html';
+                return '/app/components/login/login.html';
             }
         },
         controller: function($scope, $location) {
@@ -38,27 +38,33 @@ angular.module('bankingApp', ['ngRoute'])
         }
     })
     .when('/dashboard/admin', {
-        templateUrl: 'static/app/components/dashboard/admin/admin.html',
+        templateUrl: '/app/components/dashboard/admin/admin.html',
         controller: 'AdminController'
     })
     .when('/dashboard/customer', {
-        templateUrl: 'static/app/components/dashboard/customer/customer.html',
+        templateUrl: '/app/components/dashboard/customer/customer.html',
         controller: 'CustomerController'
     })
     .when('/transfer', {
-        templateUrl: 'static/app/components/transfer/transferView.html',
+        templateUrl: '/app/components/transfer/transferView.html',
         controller: 'TransferController'
     })
     .when('/history', {
-        templateUrl: 'static/app/components/history/historyView.html',
+        templateUrl: '/app/components/history/historyView.html',
         controller: 'HistoryController'
     })
     .otherwise({ redirectTo: '/login' });
 })
-.run(function($rootScope, $location, $authService) {
-    $rootScope.$on('$routeChangeStart', function(event, next) {
-        if (next.originalPath !== '/login' && !$authService.isAuthenticated()) {
-            $location.path('/login');
-        }
-    });
+.run(function($rootScope, $location, authService) {
+	if (authService.isLoggedIn()) {
+		authService.initializeTokenRefresh();
+	}
+	
+	$rootScope.$on('tokenRefreshed', function() {
+		authService.startTokenRefreshTimer();
+	});
+		
+	$rootScope.$on('userLoggedIn', function() {
+		authService.startTokenRefreshTimer();
+	});
 });
