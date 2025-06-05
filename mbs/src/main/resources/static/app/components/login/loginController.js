@@ -9,7 +9,10 @@ function($scope, authService, $window, $location) {
   $scope.isLoading = false;
 
   $scope.login = function() {
-    if ($scope.loginForm && $scope.loginForm.$invalid) return;
+    if ($scope.loginForm && $scope.loginForm.$invalid) {
+		alert('Please fill out all fields.');
+		return;
+	}
     
     $scope.error = null;
     $scope.isLoading = true;
@@ -21,13 +24,15 @@ function($scope, authService, $window, $location) {
           authService.initializeTokenRefresh();
           $window.location.href = ('/dashboard/' + user.role.toLowerCase());
         } else {
-          throw new Error('Invalid user data received');
+			alert('Invalid user data received.');
+          	throw new Error('Invalid user data received');
         }
       })
       .catch(function(error) {
         console.error('Login error:', error);
         $scope.error = error.data?.message || error.message || 'Login failed';
         $scope.credentials.password = '';
+		alert('Invalid credentials.');
       })
       .finally(function() {
         $scope.isLoading = false;
