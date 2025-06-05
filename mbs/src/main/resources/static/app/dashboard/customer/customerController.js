@@ -3,8 +3,6 @@ angular.module('bankingApp')
 	const user = JSON.parse(localStorage.getItem('currentUser'));
 	const userId = user.userId;
 	
-	console.log(userId);
-	
 	$scope.currentPage = 0;
 	$scope.pageSize = 6;
 	$scope.totalPages = 0;
