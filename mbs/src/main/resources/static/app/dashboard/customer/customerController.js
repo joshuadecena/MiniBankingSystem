@@ -21,7 +21,7 @@ angular.module('bankingApp')
 		$scope.page = page;
 		
 		if (page === 'dashboard') {
-			loadAccountDetails(localStorage.getItem('userId'));
+			loadAccountDetails(userId);
 		} else if (page === 'transfer') {
 			$scope.transferData.destinationAccountId = '';
 			$scope.transferData.amount = null;
