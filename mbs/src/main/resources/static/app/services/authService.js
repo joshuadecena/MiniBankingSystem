@@ -25,6 +25,7 @@ function($window, $http, $q, $timeout, $rootScope) {
         let user = {
           username: credentials.username,
           role: response.data.role,
+		  userId: response.data.userId,
           token: response.data.accessToken
         };
         storage.setItem(currentUserKey, JSON.stringify(user));
